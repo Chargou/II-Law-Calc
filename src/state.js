@@ -1,6 +1,6 @@
 import { laws as allLaws, materials as allMaterials } from './data/index.js';
 
-export function createState(initialLaws = {}, initialMaterials = {}, initialCores = 0) {
+export function createState(initialLaws = {}, initialMaterials = {}, initialCores = 0, reincarnation = false) {
   const lawLevels = {};
   for (const law of allLaws) {
     lawLevels[law.name] = initialLaws[law.name] ?? 0;
@@ -15,6 +15,7 @@ export function createState(initialLaws = {}, initialMaterials = {}, initialCore
     laws: lawLevels,
     materials: mats,
     cores: Math.max(0, initialCores),
+    reincarnation,
   };
 }
 

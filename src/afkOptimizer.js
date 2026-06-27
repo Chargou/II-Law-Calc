@@ -57,7 +57,8 @@ export function analyzeBottleneck(state, path, timeBudgetSeconds) {
 
     if (deficit <= 0) continue;
 
-    const rate = info.type === 'cores' ? getCoreRate() : getMaterialRate(name);
+    const mult = state.reincarnation ? (info.type === 'cores' ? 3 : 2) : 1;
+    const rate = (info.type === 'cores' ? getCoreRate() : getMaterialRate(name)) * mult;
     const timeNeeded = deficit / rate;
 
     bottlenecks.push({

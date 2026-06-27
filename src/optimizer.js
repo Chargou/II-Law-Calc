@@ -83,6 +83,9 @@ export function computeStepDeficits(state, path) {
   const cumMats = {};
   let cumCores = 0;
 
+  const matMult = state.reincarnation ? 2 : 1;
+  const coreMult = state.reincarnation ? 3 : 1;
+
   return path.map((step) => {
     for (const { name, qty } of step.cost.materials) {
       cumMats[name] = (cumMats[name] || 0) + qty;
@@ -96,7 +99,7 @@ export function computeStepDeficits(state, path) {
       const have = state.materials[name] || 0;
       const remainingAfterPrev = have - (totalNeeded - qty);
       const deficit = Math.max(0, qty - Math.max(0, remainingAfterPrev));
-      const rate = getMaterialRate(name);
+      const rate = getMaterialRate(name) * matMult;
       const mark = getMaterialMark(name);
       if (deficit > 0) {
         farmSteps.push({ type: 'material', resource: name, mark, deficit, rate, duration: deficit / rate });
@@ -106,7 +109,7 @@ export function computeStepDeficits(state, path) {
 
     const coresAfterPrev = state.cores - (cumCores - step.cost.cores);
     const coreDeficit = Math.max(0, step.cost.cores - Math.max(0, coresAfterPrev));
-    const coreTime = coreDeficit > 0 ? coreDeficit / getCoreRate() : 0;
+    const coreTime = coreDeficit > 0 ? coreDeficit / (getCoreRate() * coreMult) : 0;
     if (coreDeficit > 0) {
       farmSteps.push({ type: 'cores', deficit: coreDeficit, duration: coreTime });
     }

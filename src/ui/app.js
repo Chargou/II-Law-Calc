@@ -20,7 +20,7 @@ function loadState() {
     const saved = localStorage.getItem(STORAGE_KEY);
     if (saved) {
       const parsed = JSON.parse(saved);
-      return createState(parsed.laws, parsed.materials, parsed.cores);
+      return createState(parsed.laws, parsed.materials, parsed.cores, parsed.reincarnation);
     }
   } catch (e) {}
   return createState();
@@ -31,6 +31,7 @@ function saveState(state) {
     laws: state.laws,
     materials: state.materials,
     cores: state.cores,
+    reincarnation: state.reincarnation,
   }));
 }
 
@@ -115,6 +116,7 @@ export function createApp(rootEl) {
       onAfkHoursChange,
       onTimeModeChange,
       onAdvancedChange,
+      onReincarnationChange,
       weights,
       afkHours,
       timeMode,
@@ -124,6 +126,11 @@ export function createApp(rootEl) {
     recalculate();
   }
 
+  function onReincarnationChange(val) {
+    state.reincarnation = val;
+    onStateChange();
+  }
+
   renderStatePanel(statePanelEl, state, {
     onStateChange,
     onMetricChange,
@@ -131,6 +138,7 @@ export function createApp(rootEl) {
     onAfkHoursChange,
     onTimeModeChange,
     onAdvancedChange,
+    onReincarnationChange,
     weights,
     afkHours,
     timeMode,

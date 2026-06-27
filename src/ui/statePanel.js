@@ -90,6 +90,10 @@ export function renderStatePanel(el, state, options) {
         <input type="checkbox" id="advanced-mode" ${advanced ? 'checked' : ''}>
         Advanced mode (weights)
       </label>
+      <label class="checkbox-label">
+        <input type="checkbox" id="reincarnation" ${state.reincarnation ? 'checked' : ''}>
+        First reincarnation done (2× mat rate, 3× core rate)
+      </label>
     </div>
   `;
 
@@ -138,5 +142,9 @@ export function renderStatePanel(el, state, options) {
 
   el.querySelector('#advanced-mode').addEventListener('change', e => {
     options.onAdvancedChange(e.target.checked);
+  });
+
+  el.querySelector('#reincarnation').addEventListener('change', e => {
+    options.onReincarnationChange(e.target.checked);
   });
 }
