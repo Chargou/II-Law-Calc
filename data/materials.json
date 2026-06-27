@@ -1,0 +1,57 @@
+[
+  {
+    "material": "Lucent",
+    "mark": "Mark of Insight",
+    "ratePerSecond": 0.035
+  },
+  {
+    "material": "Ichor",
+    "mark": "Mark of Essence",
+    "ratePerSecond": 0.031
+  },
+  {
+    "material": "Cindral",
+    "mark": "Mark of Soulfire",
+    "ratePerSecond": 0.027
+  },
+  {
+    "material": "Kismet",
+    "mark": "Mark of Karma",
+    "ratePerSecond": 0.0235
+  },
+  {
+    "material": "Aster",
+    "mark": "Mark of Stars",
+    "ratePerSecond": 0.0205
+  },
+  {
+    "material": "Aeon",
+    "mark": "Mark of Nebulae",
+    "ratePerSecond": 0.018
+  },
+  {
+    "material": "Solace",
+    "mark": "Mark of Quasar",
+    "ratePerSecond": 0.0155
+  },
+  {
+    "material": "Morrow",
+    "mark": "Mark of Miasma",
+    "ratePerSecond": 0.0135
+  },
+  {
+    "material": "Sable",
+    "mark": "Mark of Ash",
+    "ratePerSecond": 0.0115
+  },
+  {
+    "material": "Axiom",
+    "mark": "Mark of Laws",
+    "ratePerSecond": 0.01
+  },
+  {
+    "material": "Grace",
+    "mark": "Mark of Faith",
+    "ratePerSecond": 0.0085
+  }
+]

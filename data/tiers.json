@@ -1,0 +1,16 @@
+{
+  "lesser": {
+    "baseMaterial": 5,
+    "baseCores": 25000
+  },
+  "greater": {
+    "baseMaterial": 10,
+    "baseCores": 50000
+  },
+  "origin": {
+    "baseMaterial": 15,
+    "baseCores": 100000
+  },
+  "coreRatePerSecond": 40,
+  "maxLevel": 10
+}

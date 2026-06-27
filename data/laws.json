@@ -1,0 +1,107 @@
+[
+  {
+    "name": "Perception",
+    "tier": "lesser",
+    "materials": [
+      "Lucent"
+    ],
+    "buffs": {
+      "Citizens": 1.6
+    }
+  },
+  {
+    "name": "Illusion",
+    "tier": "lesser",
+    "materials": [
+      "Ichor"
+    ],
+    "buffs": {
+      "Divinity": 1.6
+    }
+  },
+  {
+    "name": "Anima",
+    "tier": "lesser",
+    "materials": [
+      "Cindral"
+    ],
+    "buffs": {
+      "Qi": 4096
+    }
+  },
+  {
+    "name": "Alacrity",
+    "tier": "greater",
+    "materials": [
+      "Kismet",
+      "Morrow"
+    ],
+    "buffs": {
+      "Citizens": 1.8,
+      "Divinity": 1.8
+    }
+  },
+  {
+    "name": "Strength",
+    "tier": "greater",
+    "materials": [
+      "Aster",
+      "Sable"
+    ],
+    "buffs": {
+      "Qi": 2048,
+      "Remnants": 1.4
+    }
+  },
+  {
+    "name": "Darkness",
+    "tier": "greater",
+    "materials": [
+      "Aeon",
+      "Axiom"
+    ],
+    "buffs": {
+      "Manual Luck": 1.1,
+      "Disciple Luck": 1.6
+    }
+  },
+  {
+    "name": "Time",
+    "tier": "origin",
+    "materials": [
+      "Solace",
+      "Grace"
+    ],
+    "buffs": {
+      "Qi": 8192,
+      "Breakthrough Cost": 0.9,
+      "Citizens": 1.4
+    }
+  },
+  {
+    "name": "Life",
+    "tier": "origin",
+    "materials": [
+      "Cindral",
+      "Morrow"
+    ],
+    "buffs": {
+      "Damage": 1.4,
+      "Disciple Luck": 2,
+      "Citizens": 1.7
+    }
+  },
+  {
+    "name": "Death",
+    "tier": "origin",
+    "materials": [
+      "Grace",
+      "Axiom"
+    ],
+    "buffs": {
+      "Divinity": 2,
+      "Citizens": 2,
+      "Qi": 8192
+    }
+  }
+]

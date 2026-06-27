@@ -1,0 +1,142 @@
+import { laws, materials } from '../data/index.js';
+import { getLevel, setLevel, getMaterial, getCores } from '../state.js';
+
+const METRICS = ['Qi', 'Divinity', 'Citizens', 'Damage', 'Manual Luck', 'Disciple Luck', 'Remnants'];
+
+function clamp(v, min, max) {
+  return Math.max(min, Math.min(max, v));
+}
+
+function buildSectionHtml(id, title, items, getValue) {
+  const inputs = items.map(item => {
+    const name = item.name || item.material || item;
+    const label = item.label || name;
+    const maxAttr = item.max !== undefined ? ` max="${item.max}"` : '';
+    return `
+      <div class="input-group">
+        <label>${label}</label>
+        <input type="number" data-panel="${id}" data-name="${name}" value="${getValue(name)}" min="0"${maxAttr}>
+      </div>
+    `;
+  }).join('');
+
+  return `
+    <div class="section" data-section="${id}">
+      <div class="section-header">
+        <span class="toggle-icon">▼</span>
+        <span>${title}</span>
+      </div>
+      <div class="section-body">${inputs}</div>
+    </div>
+  `;
+}
+
+function handleInput(state, el, options) {
+  const panel = el.dataset.panel;
+  const name = el.dataset.name;
+  const val = clamp(parseInt(el.value) || 0, 0, el.max ? parseInt(el.max) : Infinity);
+
+  el.value = val;
+
+  if (panel === 'laws') {
+    setLevel(state, name, val);
+  } else if (panel === 'materials') {
+    state.materials[name] = val;
+  } else if (panel === 'cores') {
+    state.cores = val;
+  }
+  options.onStateChange();
+}
+
+export function renderStatePanel(el, state, options) {
+  const lawItems = laws.map(l => ({ name: l.name, label: l.name, max: 10 }));
+  const materialItems = materials.map(m => ({ name: m.material, label: m.material }));
+
+  const weights = options.weights;
+  const advanced = options.advanced;
+
+  el.innerHTML = `
+    ${buildSectionHtml('laws', 'Law Levels', lawItems, name => getLevel(state, name))}
+    ${buildSectionHtml('materials', 'Materials', materialItems, name => getMaterial(state, name))}
+    ${buildSectionHtml('cores', 'Cores', [{ name: 'cores', label: 'Cores' }], () => getCores(state))}
+    <div class="controls">
+      ${advanced ? `
+        <div class="weights-grid">
+          <div class="weights-title">Weights</div>
+          ${METRICS.map(m => `
+            <div class="weight-row">
+              <label>${m}</label>
+              <input type="number" class="weight-input" data-metric="${m}" value="${weights[m] || 0}" min="0" step="1">
+            </div>
+          `).join('')}
+        </div>
+      ` : `
+        <label>
+          Metric
+          <select id="metric-select">
+            ${METRICS.map(m => `<option value="${m}"${weights[m] ? ' selected' : ''}>${m}</option>`).join('')}
+          </select>
+        </label>
+      `}
+      <label>
+        AFK hours
+        <input type="number" id="afk-hours" value="${options.afkHours}" min="0.5" step="0.5">
+      </label>
+      <label class="checkbox-label">
+        <input type="checkbox" id="time-mode" ${options.timeMode === 'actual' ? 'checked' : ''}>
+        Use actual time (instead of total)
+      </label>
+      <label class="checkbox-label">
+        <input type="checkbox" id="advanced-mode" ${advanced ? 'checked' : ''}>
+        Advanced mode (weights)
+      </label>
+    </div>
+  `;
+
+  el.addEventListener('input', e => {
+    const input = e.target;
+    if (input.dataset.panel) {
+      handleInput(state, input, options);
+    }
+  });
+
+  el.addEventListener('click', e => {
+    const header = e.target.closest('.section-header');
+    if (!header) return;
+    const section = header.closest('.section');
+    const body = section.querySelector('.section-body');
+    const icon = header.querySelector('.toggle-icon');
+    const collapsed = section.dataset.collapsed === 'true';
+    section.dataset.collapsed = String(!collapsed);
+    body.style.display = collapsed ? 'block' : 'none';
+    icon.textContent = collapsed ? '▼' : '▶';
+  });
+
+  const metricSelect = el.querySelector('#metric-select');
+  if (metricSelect) {
+    metricSelect.addEventListener('change', e => {
+      options.onMetricChange(e.target.value);
+    });
+  }
+
+  el.querySelectorAll('.weight-input').forEach(inp => {
+    inp.addEventListener('change', e => {
+      const metric = e.target.dataset.metric;
+      const val = Math.max(0, parseFloat(e.target.value) || 0);
+      e.target.value = val;
+      options.onWeightsChange(metric, val);
+    });
+  });
+
+  el.querySelector('#afk-hours').addEventListener('change', e => {
+    options.onAfkHoursChange(parseFloat(e.target.value) || 2);
+  });
+
+  el.querySelector('#time-mode').addEventListener('change', e => {
+    options.onTimeModeChange(e.target.checked ? 'actual' : 'total');
+  });
+
+  el.querySelector('#advanced-mode').addEventListener('change', e => {
+    options.onAdvancedChange(e.target.checked);
+  });
+}
