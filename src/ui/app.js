@@ -52,7 +52,7 @@ export function createApp(rootEl) {
   const advanced = settings.advanced || false;
   let weights = settings.weights || { ...defaultWeights(), ...(settings.metric ? { [settings.metric]: 1 } : { Qi: 1 }) };
   let afkHours = settings.afkHours || 2;
-  let timeMode = settings.timeMode || 'total';
+  let timeMode = settings.timeMode || 'actual';
   let isAdvanced = advanced;
 
   const statePanelEl = rootEl.querySelector('#state-panel');
