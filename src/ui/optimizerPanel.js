@@ -1,4 +1,5 @@
 import { getFarmingTimeNeeded, getTotalTimeCost } from '../farming.js';
+import { getMaterialRate, getCoreRate } from '../data/index.js';
 import { computeStepDeficits } from '../optimizer.js';
 
 function fmtTime(seconds) {
@@ -88,6 +89,23 @@ function renderFullPath(path, state, timeMode) {
 
   const totalTime = enriched.reduce((sum, step) => sum + stepTime(step), 0);
 
+  const resourceTime = {};
+  if (timeMode === 'actual') {
+    for (const step of enriched) {
+      for (const fs of step.deficits.farmSteps) {
+        const key = fs.type === 'cores' ? 'cores' : fs.resource;
+        resourceTime[key] = (resourceTime[key] || 0) + fs.duration;
+      }
+    }
+  } else {
+    for (const step of enriched) {
+      for (const { name, qty } of step.cost.materials) {
+        resourceTime[name] = (resourceTime[name] || 0) + qty / getMaterialRate(name);
+      }
+      resourceTime.cores = (resourceTime.cores || 0) + step.cost.cores / getCoreRate();
+    }
+  }
+
   return `
     <div class="card">
       <h3>Full Upgrade Path (${path.length} steps)</h3>
@@ -108,6 +126,11 @@ function renderFullPath(path, state, timeMode) {
         </table>
       </div>
       <div class="path-total">Total ${timeLabel.toLowerCase()} time: ${fmtTime(totalTime)}</div>
+      <div class="path-resources">
+        ${Object.entries(resourceTime).sort(([a], [b]) => a === 'cores' ? 1 : b === 'cores' ? -1 : a.localeCompare(b)).map(([name, time]) => `
+          <span class="resource-time">${name}: ${fmtTime(time)}</span>
+        `).join('')}
+      </div>
     </div>
   `;
 }
