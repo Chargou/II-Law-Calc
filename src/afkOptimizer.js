@@ -23,24 +23,12 @@ export function analyzeBottleneck(state, path, timeBudgetSeconds) {
     }
 
     if (!resourceNeeds['_cores']) {
-      let cumCores = 0;
-      for (let j = 0; j <= stepIdx; j++) {
-        cumCores += getUpgradeCost(path[j].law, path[j].fromLevel).cores;
-      }
-      if (cumCores > state.cores) {
-        resourceNeeds['_cores'] = { totalQty: cumCores, earliestStep: stepIdx, type: 'cores' };
-      } else if (stepIdx === path.length - 1) {
-        resourceNeeds['_cores'] = { totalQty: cumCores, earliestStep: -1, type: 'cores' };
-      }
+      resourceNeeds['_cores'] = { totalQty: 0, earliestStep: -1, type: 'cores' };
     }
-  }
-
-  if (!resourceNeeds['_cores']) {
-    let finalCum = 0;
-    for (const step of path) {
-      finalCum += getUpgradeCost(step.law, step.fromLevel).cores;
+    resourceNeeds['_cores'].totalQty += cost.cores;
+    if (resourceNeeds['_cores'].earliestStep === -1 && resourceNeeds['_cores'].totalQty > state.cores) {
+      resourceNeeds['_cores'].earliestStep = stepIdx;
     }
-    resourceNeeds['_cores'] = { totalQty: finalCum, earliestStep: -1, type: 'cores' };
   }
 
   const bottlenecks = [];
