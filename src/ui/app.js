@@ -1,6 +1,6 @@
 import { laws } from '../data/index.js';
 import { createState } from '../state.js';
-import { findBestNextUpgrade, getUpgradePath, ALL_METRICS } from '../optimizer.js';
+import { findBestNextUpgrade, getUpgradePath, applyUpgrade, ALL_METRICS } from '../optimizer.js';
 import { analyzeBottleneck } from '../afkOptimizer.js';
 import { renderStatePanel } from './statePanel.js';
 import { updateOptimizerPanel } from './optimizerPanel.js';
@@ -71,13 +71,21 @@ export function createApp(rootEl) {
   const statePanelEl = rootEl.querySelector('#state-panel');
   const optimizerPanelEl = rootEl.querySelector('#optimizer-panel');
   const afkPanelEl = rootEl.querySelector('#afk-panel');
+  let currentPath = [];
 
   function recalculate() {
     const best = findBestNextUpgrade(state, weights, laws, timeMode);
-    const path = getUpgradePath(state, weights, laws, undefined, timeMode);
-    const afk = path.length > 0 ? analyzeBottleneck(state, path, afkHours * 3600) : null;
-    updateOptimizerPanel(optimizerPanelEl, best, path, state, timeMode, weights);
+    currentPath = getUpgradePath(state, weights, laws, undefined, timeMode);
+    const afk = currentPath.length > 0 ? analyzeBottleneck(state, currentPath, afkHours * 3600) : null;
+    updateOptimizerPanel(optimizerPanelEl, best, currentPath, state, timeMode, weights, onStepDone);
     updateAfkPanel(afkPanelEl, afk);
+  }
+
+  function onStepDone(index) {
+    const step = currentPath[index];
+    if (!step) return;
+    applyUpgrade(state, step);
+    onStateChange();
   }
 
   function persistSettings() {
@@ -86,6 +94,13 @@ export function createApp(rootEl) {
 
   function onStateChange() {
     saveState(state);
+    statePanelEl.querySelectorAll('[data-panel]').forEach(input => {
+      const panel = input.dataset.panel;
+      const name = input.dataset.name;
+      if (panel === 'laws') input.value = state.laws[name] || 0;
+      else if (panel === 'materials') input.value = state.materials[name] || 0;
+      else if (panel === 'cores') input.value = state.cores;
+    });
     recalculate();
   }
 

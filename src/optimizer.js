@@ -53,7 +53,7 @@ export function findBestNextUpgrade(state, weights, laws, timeMode = 'total') {
   return best;
 }
 
-function applyUpgrade(state, upgrade) {
+export function applyUpgrade(state, upgrade) {
   const cost = upgrade.cost;
   for (const { name, qty } of cost.materials) {
     const have = state.materials[name] || 0;

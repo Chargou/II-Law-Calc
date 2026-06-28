@@ -328,6 +328,22 @@ main {
   font-style: italic;
 }
 
+.step-done-btn {
+  margin-top: 8px;
+  padding: 4px 14px;
+  background: #1f6f3a;
+  border: 1px solid #238636;
+  border-radius: 4px;
+  color: #c9d1d9;
+  font-size: 0.75rem;
+  cursor: pointer;
+}
+
+.step-done-btn:hover {
+  background: #238636;
+  color: #f0f6fc;
+}
+
 .scroll-table {
   overflow-x: auto;
 }

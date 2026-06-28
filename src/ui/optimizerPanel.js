@@ -84,7 +84,7 @@ function formatScoreBreakdown(law, weights) {
   return parts.join('&#10;');
 }
 
-function renderFullPath(path, state, timeMode, weights) {
+function renderFullPath(path, state, timeMode, weights, onStepDone) {
   if (path.length === 0) {
     return '<div class="card"><h3>Full Upgrade Path</h3><p class="empty-state">Enter resources and select a metric to see the upgrade path.</p></div>';
   }
@@ -109,6 +109,7 @@ function renderFullPath(path, state, timeMode, weights) {
       <tr class="detail-row" data-step="${i}">
         <td colspan="7">
           <div class="step-detail">${renderDetailRow(step)}</div>
+          ${onStepDone ? '<button class="step-done-btn" data-step="' + i + '">Done</button>' : ''}
         </td>
       </tr>
     `).join('');
@@ -161,8 +162,8 @@ function renderFullPath(path, state, timeMode, weights) {
   `;
 }
 
-export function updateOptimizerPanel(el, best, path, state, timeMode = 'total', weights) {
-  el.innerHTML = renderBestNext(best, state, timeMode) + renderFullPath(path, state, timeMode, weights);
+export function updateOptimizerPanel(el, best, path, state, timeMode = 'total', weights, onStepDone) {
+  el.innerHTML = renderBestNext(best, state, timeMode) + renderFullPath(path, state, timeMode, weights, onStepDone);
 
   el.querySelectorAll('.path-row').forEach(row => {
     row.addEventListener('click', () => {
@@ -171,6 +172,13 @@ export function updateOptimizerPanel(el, best, path, state, timeMode = 'total', 
       if (detail) {
         detail.classList.toggle('open');
       }
+    });
+  });
+
+  el.querySelectorAll('.step-done-btn').forEach(btn => {
+    btn.addEventListener('click', e => {
+      e.stopPropagation();
+      onStepDone(parseInt(btn.dataset.step));
     });
   });
 }
