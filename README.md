@@ -6,15 +6,6 @@ Greedy upgrade-path optimizer for the **Immortality Incremental** law table in I
 
 Given your current resources (materials, cores, law levels), the optimizer finds the best upgrade order based on your chosen metric or weighted combination of metrics. It simulates farming time and shows actual deficits per step.
 
-## How to use
-
-1. Set your **law levels**, **materials**, and **cores** in the left panel
-2. Choose a **metric** or enable **Advanced mode** to set weights
-3. The optimizer shows the **Best Next Upgrade** and the **Full Upgrade Path**
-4. Click any path row to expand **farming details** per step
-5. Click **Done** on a step to apply it and advance your state
-6. Use the **AFK recommendation** for idle farming sessions
-
 ## Features
 
 - **Greedy optimizer** — picks the highest-scoring next upgrade, repeats for a full path
@@ -28,3 +19,28 @@ Given your current resources (materials, cores, law levels), the optimizer finds
 - **Export / Import** — full state as a shareable JSON file
 - **Dark theme** with responsive layout for mobile
 - **localStorage persistence** — everything saves automatically
+
+## How to use
+
+1. Set your **law levels**, **materials**, and **cores** in the left panel
+2. Choose a **metric** or enable **Advanced mode** to set weights
+3. The optimizer shows the **Best Next Upgrade** and the **Full Upgrade Path**
+4. Click any path row to expand **farming details** per step
+5. Click **Done** on a step to apply it and advance your state
+6. Use the **AFK recommendation** for idle farming sessions
+
+## Development
+
+```
+npm install
+npm run dev     # starts Vite dev server
+npm test        # runs vitest
+npm run build   # production build to dist/
+```
+
+## Tech
+
+- [Vite 8](https://vite.dev)
+- [Vitest 4](https://vitest.dev)
+- Vanilla JS, no frameworks
+- GitHub Pages ready (`base: /II-Law-Calc/`)
