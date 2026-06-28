@@ -72,10 +72,13 @@ export function analyzeBottleneck(state, path, timeBudgetSeconds) {
 
   if (bottlenecks.length === 0) return null;
 
-  bottlenecks.sort((a, b) => a.earliestStep - b.earliestStep || b.timeNeeded - a.timeNeeded);
-
-  let best = bottlenecks.find(r => r.timeNeeded > timeBudgetSeconds);
-  if (!best) best = bottlenecks[0];
+  const minNeed = bottlenecks.reduce((a, b) => a.timeNeeded < b.timeNeeded ? a : b);
+  let best;
+  if (timeBudgetSeconds >= minNeed.timeNeeded) {
+    best = bottlenecks.reduce((a, b) => a.timeNeeded > b.timeNeeded ? a : b);
+  } else {
+    best = bottlenecks.reduce((a, b) => a.earliestStep < b.earliestStep ? a : b);
+  }
 
   return {
     resource: best.name,
