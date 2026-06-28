@@ -47,6 +47,18 @@ function saveSettings(settings) {
   localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
 }
 
+export function debugInfo(state, weights, afkHours, timeMode) {
+  console.log('=== II Law Calc Debug ===');
+  console.log('State:', JSON.parse(JSON.stringify(state)));
+  console.log('Weights:', weights);
+  console.log('AFK hours:', afkHours);
+  console.log('Time mode:', timeMode);
+  console.log('Laws:', JSON.parse(JSON.stringify(state.laws)));
+  console.log('Materials:', JSON.parse(JSON.stringify(state.materials)));
+  console.log('Cores:', state.cores);
+  console.log('Reincarnation:', state.reincarnation);
+}
+
 export function createApp(rootEl) {
   const state = loadState();
   const settings = loadSettings();
@@ -130,6 +142,8 @@ export function createApp(rootEl) {
     state.reincarnation = val;
     onStateChange();
   }
+
+  window.debugIILawCalc = () => debugInfo(state, weights, afkHours, timeMode);
 
   renderStatePanel(statePanelEl, state, {
     onStateChange,

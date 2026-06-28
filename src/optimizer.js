@@ -57,9 +57,9 @@ function applyUpgrade(state, upgrade) {
   const cost = upgrade.cost;
   for (const { name, qty } of cost.materials) {
     const have = state.materials[name] || 0;
-    state.materials[name] = have - qty;
+    state.materials[name] = Math.max(0, have - qty);
   }
-  state.cores -= cost.cores;
+  state.cores = Math.max(0, state.cores - cost.cores);
   setLevel(state, upgrade.law.name, upgrade.toLevel);
 }
 
