@@ -94,6 +94,11 @@ export function renderStatePanel(el, state, options) {
         <input type="checkbox" id="reincarnation" ${state.reincarnation ? 'checked' : ''}>
         First reincarnation done (2× mat rate, 3× core rate)
       </label>
+      <div class="io-buttons">
+        <button class="io-btn" id="export-btn">Export</button>
+        <button class="io-btn" id="import-btn">Import</button>
+        <input type="file" id="import-file" accept=".json" style="display:none">
+      </div>
     </div>
   `;
 
@@ -146,5 +151,18 @@ export function renderStatePanel(el, state, options) {
 
   el.querySelector('#reincarnation').addEventListener('change', e => {
     options.onReincarnationChange(e.target.checked);
+  });
+
+  el.querySelector('#export-btn').addEventListener('click', () => options.onExport());
+
+  el.querySelector('#import-btn').addEventListener('click', () => {
+    el.querySelector('#import-file').click();
+  });
+
+  el.querySelector('#import-file').addEventListener('change', e => {
+    if (e.target.files[0]) {
+      options.onImport(e.target.files[0]);
+      e.target.value = '';
+    }
   });
 }

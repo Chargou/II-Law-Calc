@@ -58,7 +58,33 @@ function renderDetailRow(detail) {
   `).join('');
 }
 
-function renderFullPath(path, state, timeMode) {
+function formatBuffs(buffs) {
+  return Object.entries(buffs).map(([k, v]) => `${k}: ${v}`).join('&#10;');
+}
+
+function formatScoreBreakdown(law, weights) {
+  if (!weights) return '';
+  const parts = [];
+  let total = 0;
+  for (const metric of ['Qi', 'Divinity', 'Citizens', 'Damage', 'Manual Luck', 'Disciple Luck', 'Remnants']) {
+    const w = weights[metric] || 0;
+    if (w <= 0) continue;
+    let gain = law.buffs[metric] ?? 0;
+    let label = metric;
+    if (metric === 'Qi' && law.buffs['Breakthrough Cost']) {
+      const bc = law.buffs['Breakthrough Cost'];
+      gain *= (1 / bc);
+      label += ` (×${fmtNum(1 / bc)} breakthrough)`;
+    }
+    const contrib = gain * w;
+    total += contrib;
+    parts.push(`${label}: ${fmtNum(gain)} × ${fmtNum(w)} = ${fmtNum(contrib)}`);
+  }
+  parts.push(`Total: ${fmtNum(total)}`);
+  return parts.join('&#10;');
+}
+
+function renderFullPath(path, state, timeMode, weights) {
   if (path.length === 0) {
     return '<div class="card"><h3>Full Upgrade Path</h3><p class="empty-state">Enter resources and select a metric to see the upgrade path.</p></div>';
   }
@@ -73,11 +99,11 @@ function renderFullPath(path, state, timeMode) {
   const rows = enriched.map((step, i) => `
       <tr class="path-row" data-step="${i}">
         <td>${i + 1}</td>
-        <td>${step.law.name}</td>
+        <td title="${formatBuffs(step.law.buffs)}">${step.law.name}</td>
         <td>${step.fromLevel}→${step.toLevel}</td>
         <td>${formatMats(step.cost.materials)}</td>
         <td>${fmtNum(step.cost.cores)}</td>
-        <td class="gain">${fmtNum(step.totalGain)}</td>
+        <td class="gain"${weights ? ` title="${formatScoreBreakdown(step.law, weights)}"` : ''}>${fmtNum(step.totalGain)}</td>
         <td>${fmtTime(stepTime(step))}</td>
       </tr>
       <tr class="detail-row" data-step="${i}">
@@ -113,13 +139,13 @@ function renderFullPath(path, state, timeMode) {
         <table class="path-table">
           <thead>
             <tr>
-              <th>#</th>
-              <th>Law</th>
-              <th>Level</th>
-              <th>Materials</th>
-              <th>Cores</th>
-              <th>Score</th>
-              <th>${timeLabel}</th>
+              <th title="Step number">#</th>
+              <th title="Law name — hover for buffs">Law</th>
+              <th title="Level before → after upgrade">Level</th>
+              <th title="Materials needed for this upgrade">Materials</th>
+              <th title="Cores needed for this upgrade">Cores</th>
+              <th title="Weighted total gain (sum of metric gains × weights)">Score</th>
+              <th title="${timeMode === 'actual' ? 'Farming time based on current deficit' : 'Farming time for full cost'}">${timeLabel}</th>
             </tr>
           </thead>
           <tbody>${rows}</tbody>
@@ -135,8 +161,8 @@ function renderFullPath(path, state, timeMode) {
   `;
 }
 
-export function updateOptimizerPanel(el, best, path, state, timeMode = 'total') {
-  el.innerHTML = renderBestNext(best, state, timeMode) + renderFullPath(path, state, timeMode);
+export function updateOptimizerPanel(el, best, path, state, timeMode = 'total', weights) {
+  el.innerHTML = renderBestNext(best, state, timeMode) + renderFullPath(path, state, timeMode, weights);
 
   el.querySelectorAll('.path-row').forEach(row => {
     row.addEventListener('click', () => {

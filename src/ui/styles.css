@@ -359,6 +359,30 @@ main {
   white-space: nowrap;
 }
 
+.io-buttons {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px solid #30363d;
+}
+
+.io-btn {
+  flex: 1;
+  padding: 6px 12px;
+  background: #21262d;
+  border: 1px solid #30363d;
+  border-radius: 5px;
+  color: #c9d1d9;
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+
+.io-btn:hover {
+  background: #30363d;
+  color: #f0f6fc;
+}
+
 @media (max-width: 768px) {
   main {
     grid-template-columns: 1fr;

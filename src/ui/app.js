@@ -76,7 +76,7 @@ export function createApp(rootEl) {
     const best = findBestNextUpgrade(state, weights, laws, timeMode);
     const path = getUpgradePath(state, weights, laws, undefined, timeMode);
     const afk = path.length > 0 ? analyzeBottleneck(state, path, afkHours * 3600) : null;
-    updateOptimizerPanel(optimizerPanelEl, best, path, state, timeMode);
+    updateOptimizerPanel(optimizerPanelEl, best, path, state, timeMode, weights);
     updateAfkPanel(afkPanelEl, afk);
   }
 
@@ -122,17 +122,10 @@ export function createApp(rootEl) {
       weights[active ? active[0] : 'Qi'] = 1;
     }
     renderStatePanel(statePanelEl, state, {
-      onStateChange,
-      onMetricChange,
-      onWeightsChange,
-      onAfkHoursChange,
-      onTimeModeChange,
-      onAdvancedChange,
-      onReincarnationChange,
-      weights,
-      afkHours,
-      timeMode,
-      advanced: isAdvanced,
+      onStateChange, onMetricChange, onWeightsChange, onAfkHoursChange,
+      onTimeModeChange, onAdvancedChange, onReincarnationChange,
+      onExport, onImport,
+      weights, afkHours, timeMode, advanced: isAdvanced,
     });
     persistSettings();
     recalculate();
@@ -143,20 +136,70 @@ export function createApp(rootEl) {
     onStateChange();
   }
 
+  function serializeFullState() {
+    return {
+      version: 1,
+      laws: { ...state.laws },
+      materials: { ...state.materials },
+      cores: state.cores,
+      reincarnation: state.reincarnation,
+      weights: { ...weights },
+      afkHours,
+      timeMode,
+      advanced: isAdvanced,
+    };
+  }
+
+  function applyFullState(data) {
+    state.laws = { ...data.laws };
+    state.materials = { ...data.materials };
+    state.cores = data.cores;
+    state.reincarnation = !!data.reincarnation;
+    weights = { ...(data.weights || defaultWeights()) };
+    afkHours = data.afkHours ?? 2;
+    timeMode = data.timeMode || 'actual';
+    isAdvanced = !!data.advanced;
+    saveState(state);
+    persistSettings();
+    renderStatePanel(statePanelEl, state, {
+      onStateChange, onMetricChange, onWeightsChange, onAfkHoursChange,
+      onTimeModeChange, onAdvancedChange, onReincarnationChange,
+      weights, afkHours, timeMode, advanced: isAdvanced,
+    });
+    recalculate();
+  }
+
+  function onExport() {
+    const blob = new Blob([JSON.stringify(serializeFullState(), null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'ii-law-calc-state.json';
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
+  function onImport(file) {
+    const reader = new FileReader();
+    reader.onload = () => {
+      try {
+        const data = JSON.parse(reader.result);
+        if (data.version !== 1) throw new Error('Unsupported format version');
+        applyFullState(data);
+      } catch (e) {
+        alert('Failed to import state: ' + e.message);
+      }
+    };
+    reader.readAsText(file);
+  }
+
   window.debugIILawCalc = () => debugInfo(state, weights, afkHours, timeMode);
 
   renderStatePanel(statePanelEl, state, {
-    onStateChange,
-    onMetricChange,
-    onWeightsChange,
-    onAfkHoursChange,
-    onTimeModeChange,
-    onAdvancedChange,
-    onReincarnationChange,
-    weights,
-    afkHours,
-    timeMode,
-    advanced: isAdvanced,
+    onStateChange, onMetricChange, onWeightsChange, onAfkHoursChange,
+    onTimeModeChange, onAdvancedChange, onReincarnationChange,
+    onExport, onImport,
+    weights, afkHours, timeMode, advanced: isAdvanced,
   });
 
   recalculate();
