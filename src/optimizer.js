@@ -1,6 +1,6 @@
 import { getUpgradeCost, isMaxLevel } from './costCalculator.js';
 import { getActualTimeCost, getTotalTimeCost } from './farming.js';
-import { getLevel, setLevel, cloneState } from './state.js';
+import { getLevel, setLevel, cloneState, computeMultipliers } from './state.js';
 import { getMaxLevel, getMaterialRate, getCoreRate, getMaterialMark } from './data/index.js';
 
 export const ALL_METRICS = ['Qi', 'Divinity', 'Citizens', 'Damage', 'Manual Luck', 'Disciple Luck', 'Remnants'];
@@ -83,8 +83,7 @@ export function computeStepDeficits(state, path) {
   const cumMats = {};
   let cumCores = 0;
 
-  const matMult = state.reincarnation ? 2 : 1;
-  const coreMult = state.reincarnation ? 3 : 1;
+  const { matMult, coreMult } = computeMultipliers(state);
 
   return path.map((step) => {
     for (const { name, qty } of step.cost.materials) {

@@ -1,6 +1,7 @@
 import { getFarmingTimeNeeded, getTotalTimeCost } from '../farming.js';
 import { getMaterialRate, getCoreRate } from '../data/index.js';
 import { computeStepDeficits } from '../optimizer.js';
+import { computeMultipliers } from '../state.js';
 
 function fmtTime(seconds) {
   const h = Math.floor(seconds / 3600);
@@ -125,11 +126,12 @@ function renderFullPath(path, state, timeMode, weights, onStepDone) {
       }
     }
   } else {
+    const { matMult, coreMult } = computeMultipliers(state);
     for (const step of enriched) {
       for (const { name, qty } of step.cost.materials) {
-        resourceTime[name] = (resourceTime[name] || 0) + qty / getMaterialRate(name);
+        resourceTime[name] = (resourceTime[name] || 0) + qty / (getMaterialRate(name) * matMult);
       }
-      resourceTime.cores = (resourceTime.cores || 0) + step.cost.cores / getCoreRate();
+      resourceTime.cores = (resourceTime.cores || 0) + step.cost.cores / (getCoreRate() * coreMult);
     }
   }
 

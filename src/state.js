@@ -1,6 +1,6 @@
 import { laws as allLaws, materials as allMaterials } from './data/index.js';
 
-export function createState(initialLaws = {}, initialMaterials = {}, initialCores = 0, reincarnation = false) {
+export function createState(initialLaws = {}, initialMaterials = {}, initialCores = 0, reincarnation = false, materialRateMult = 1, coreRateMult = 1, ashSecret = false) {
   const lawLevels = {};
   for (const law of allLaws) {
     lawLevels[law.name] = initialLaws[law.name] ?? 0;
@@ -16,7 +16,20 @@ export function createState(initialLaws = {}, initialMaterials = {}, initialCore
     materials: mats,
     cores: Math.max(0, initialCores),
     reincarnation,
+    materialRateMult,
+    coreRateMult,
+    ashSecret,
   };
+}
+
+export function computeMultipliers(state) {
+  let matMult = 1;
+  let coreMult = 1;
+  if (state.reincarnation) { matMult *= 2; coreMult *= 3; }
+  if (state.ashSecret) { matMult *= 2; coreMult *= 2; }
+  matMult *= (state.materialRateMult ?? 1);
+  coreMult *= (state.coreRateMult ?? 1);
+  return { matMult, coreMult };
 }
 
 export function getLevel(state, lawName) {

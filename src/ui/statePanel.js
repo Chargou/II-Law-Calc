@@ -94,6 +94,18 @@ export function renderStatePanel(el, state, options) {
         <input type="checkbox" id="reincarnation" ${state.reincarnation ? 'checked' : ''}>
         First reincarnation done (2× mat rate, 3× core rate)
       </label>
+      <label class="checkbox-label">
+        <input type="checkbox" id="ash-secret" ${state.ashSecret ? 'checked' : ''}>
+        Ash Secret Maxed (2× mat & core rate)
+      </label>
+      <div class="mult-row">
+        <label>Other mat mult</label>
+        <input type="number" id="mat-mult" value="${state.materialRateMult ?? 1}" min="0.01" step="0.01">
+      </div>
+      <div class="mult-row">
+        <label>Other core mult</label>
+        <input type="number" id="core-mult" value="${state.coreRateMult ?? 1}" min="0.01" step="0.01">
+      </div>
       <div class="io-buttons">
         <button class="io-btn" id="export-btn">Export</button>
         <button class="io-btn" id="import-btn">Import</button>
@@ -151,6 +163,18 @@ export function renderStatePanel(el, state, options) {
 
   el.querySelector('#reincarnation').addEventListener('change', e => {
     options.onReincarnationChange(e.target.checked);
+  });
+
+  el.querySelector('#ash-secret').addEventListener('change', e => {
+    options.onAshSecretChange(e.target.checked);
+  });
+
+  el.querySelector('#mat-mult').addEventListener('change', e => {
+    options.onMatMultChange(parseFloat(e.target.value) || 1);
+  });
+
+  el.querySelector('#core-mult').addEventListener('change', e => {
+    options.onCoreMultChange(parseFloat(e.target.value) || 1);
   });
 
   el.querySelector('#export-btn').addEventListener('click', () => options.onExport());

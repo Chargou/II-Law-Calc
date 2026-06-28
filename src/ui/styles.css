@@ -71,20 +71,23 @@ main {
   padding: 4px 0 8px 20px;
 }
 
-.input-group {
+.input-group,
+.mult-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 3px 0;
 }
 
-.input-group label {
+.input-group label,
+.mult-row label {
   font-size: 0.875rem;
   color: #c9d1d9;
   min-width: 100px;
 }
 
-.input-group input {
+.input-group input,
+.mult-row input {
   width: 80px;
   padding: 3px 6px;
   background: #0d1117;
@@ -95,7 +98,8 @@ main {
   text-align: right;
 }
 
-.input-group input:focus {
+.input-group input:focus,
+.mult-row input:focus {
   outline: none;
   border-color: #58a6ff;
 }

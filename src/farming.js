@@ -1,4 +1,5 @@
 import { getMaterialRate, getCoreRate } from './data/index.js';
+import { computeMultipliers } from './state.js';
 
 export function getDeficit(state, cost) {
   const materialDeficits = cost.materials.map(({ name, qty }) => {
@@ -14,8 +15,7 @@ export function getDeficit(state, cost) {
 
 export function getActualTimeCost(state, cost) {
   const deficit = getDeficit(state, cost);
-  const matMult = state.reincarnation ? 2 : 1;
-  const coreMult = state.reincarnation ? 3 : 1;
+  const { matMult, coreMult } = computeMultipliers(state);
   let totalSeconds = 0;
 
   for (const { name, qty } of deficit.materials) {
@@ -32,8 +32,7 @@ export function getActualTimeCost(state, cost) {
 }
 
 export function getTotalTimeCost(state, cost) {
-  const matMult = state.reincarnation ? 2 : 1;
-  const coreMult = state.reincarnation ? 3 : 1;
+  const { matMult, coreMult } = computeMultipliers(state);
   let totalSeconds = 0;
 
   for (const { name, qty } of cost.materials) {

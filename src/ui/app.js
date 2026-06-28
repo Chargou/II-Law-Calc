@@ -20,7 +20,7 @@ function loadState() {
     const saved = localStorage.getItem(STORAGE_KEY);
     if (saved) {
       const parsed = JSON.parse(saved);
-      return createState(parsed.laws, parsed.materials, parsed.cores, parsed.reincarnation);
+      return createState(parsed.laws, parsed.materials, parsed.cores, parsed.reincarnation, parsed.materialRateMult, parsed.coreRateMult, parsed.ashSecret);
     }
   } catch (e) {}
   return createState();
@@ -32,6 +32,9 @@ function saveState(state) {
     materials: state.materials,
     cores: state.cores,
     reincarnation: state.reincarnation,
+    materialRateMult: state.materialRateMult,
+    coreRateMult: state.coreRateMult,
+    ashSecret: state.ashSecret,
   }));
 }
 
@@ -57,6 +60,9 @@ export function debugInfo(state, weights, afkHours, timeMode) {
   console.log('Materials:', JSON.parse(JSON.stringify(state.materials)));
   console.log('Cores:', state.cores);
   console.log('Reincarnation:', state.reincarnation);
+  console.log('Ash Secret:', state.ashSecret);
+  console.log('Material rate mult:', state.materialRateMult);
+  console.log('Core rate mult:', state.coreRateMult);
 }
 
 export function createApp(rootEl) {
@@ -139,6 +145,7 @@ export function createApp(rootEl) {
     renderStatePanel(statePanelEl, state, {
       onStateChange, onMetricChange, onWeightsChange, onAfkHoursChange,
       onTimeModeChange, onAdvancedChange, onReincarnationChange,
+      onAshSecretChange, onMatMultChange, onCoreMultChange,
       onExport, onImport,
       weights, afkHours, timeMode, advanced: isAdvanced,
     });
@@ -151,6 +158,21 @@ export function createApp(rootEl) {
     onStateChange();
   }
 
+  function onAshSecretChange(val) {
+    state.ashSecret = val;
+    onStateChange();
+  }
+
+  function onMatMultChange(val) {
+    state.materialRateMult = val;
+    onStateChange();
+  }
+
+  function onCoreMultChange(val) {
+    state.coreRateMult = val;
+    onStateChange();
+  }
+
   function serializeFullState() {
     return {
       version: 1,
@@ -158,6 +180,9 @@ export function createApp(rootEl) {
       materials: { ...state.materials },
       cores: state.cores,
       reincarnation: state.reincarnation,
+      materialRateMult: state.materialRateMult,
+      coreRateMult: state.coreRateMult,
+      ashSecret: state.ashSecret,
       weights: { ...weights },
       afkHours,
       timeMode,
@@ -170,6 +195,9 @@ export function createApp(rootEl) {
     state.materials = { ...data.materials };
     state.cores = data.cores;
     state.reincarnation = !!data.reincarnation;
+    state.materialRateMult = data.materialRateMult ?? 1;
+    state.coreRateMult = data.coreRateMult ?? 1;
+    state.ashSecret = !!data.ashSecret;
     weights = { ...(data.weights || defaultWeights()) };
     afkHours = data.afkHours ?? 2;
     timeMode = data.timeMode || 'actual';
@@ -179,6 +207,7 @@ export function createApp(rootEl) {
     renderStatePanel(statePanelEl, state, {
       onStateChange, onMetricChange, onWeightsChange, onAfkHoursChange,
       onTimeModeChange, onAdvancedChange, onReincarnationChange,
+      onAshSecretChange, onMatMultChange, onCoreMultChange,
       weights, afkHours, timeMode, advanced: isAdvanced,
     });
     recalculate();
@@ -213,6 +242,7 @@ export function createApp(rootEl) {
   renderStatePanel(statePanelEl, state, {
     onStateChange, onMetricChange, onWeightsChange, onAfkHoursChange,
     onTimeModeChange, onAdvancedChange, onReincarnationChange,
+    onAshSecretChange, onMatMultChange, onCoreMultChange,
     onExport, onImport,
     weights, afkHours, timeMode, advanced: isAdvanced,
   });
