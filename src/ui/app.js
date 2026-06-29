@@ -82,7 +82,7 @@ export function createApp(rootEl) {
   function recalculate() {
     const best = findBestNextUpgrade(state, weights, laws, timeMode);
     currentPath = getUpgradePath(state, weights, laws, undefined, timeMode);
-    const afk = currentPath.length > 0 ? analyzeBottleneck(state, currentPath, afkHours * 3600) : null;
+    const afk = currentPath.length > 0 ? analyzeBottleneck(state, currentPath, afkHours * 3600, weights, laws) : null;
     updateOptimizerPanel(optimizerPanelEl, best, currentPath, state, timeMode, weights, onStepDone);
     updateAfkPanel(afkPanelEl, afk);
   }

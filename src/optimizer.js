@@ -13,7 +13,7 @@ function computeEffectiveGain(law, metric) {
   return gain;
 }
 
-function computeTotalGain(law, weights) {
+export function computeTotalGain(law, weights) {
   let total = 0;
   for (const metric of ALL_METRICS) {
     const w = weights[metric] || 0;

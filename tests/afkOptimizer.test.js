@@ -12,7 +12,7 @@ describe('analyzeBottleneck', () => {
     const path = getUpgradePath(state, QI, laws);
     expect(path.length).toBeGreaterThan(0);
 
-    const rec = analyzeBottleneck(state, path, 7200);
+    const rec = analyzeBottleneck(state, path, 7200, QI, laws);
     expect(rec).not.toBeNull();
     expect(rec.resource).toBeDefined();
     expect(rec.duration).toBeGreaterThan(0);
@@ -28,9 +28,13 @@ describe('analyzeBottleneck', () => {
         state.materials[name] = (state.materials[name] || 0) + qty;
       }
     }
+    // Also cover zero-score laws that the fallback might check
+    for (const name of Object.keys(state.materials)) {
+      state.materials[name] = 100000000;
+    }
     state.cores = 100000000;
 
-    const rec = analyzeBottleneck(state, path, 7200);
+    const rec = analyzeBottleneck(state, path, 7200, QI, laws);
     expect(rec).toBeNull();
   });
 
@@ -38,7 +42,7 @@ describe('analyzeBottleneck', () => {
     const state = createState({}, {}, 0);
     const path = getUpgradePath(state, QI, laws);
     const budget = 1800;
-    const rec = analyzeBottleneck(state, path, budget);
+    const rec = analyzeBottleneck(state, path, budget, QI, laws);
     if (rec) {
       expect(rec.duration).toBeLessThanOrEqual(budget + 0.01);
     }

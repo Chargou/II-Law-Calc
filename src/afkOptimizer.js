@@ -1,79 +1,135 @@
-import { getUpgradeCost } from './costCalculator.js';
+import { getUpgradeCost, isMaxLevel } from './costCalculator.js';
 import { getMaterialRate, getCoreRate } from './data/index.js';
-import { getLevel, getMaterial, getCores } from './state.js';
+import { getLevel, getMaterial, getCores, computeMultipliers } from './state.js';
+import { computeTotalGain } from './optimizer.js';
 
-export function analyzeBottleneck(state, path, timeBudgetSeconds) {
-  const resourceNeeds = {};
+export function analyzeBottleneck(state, path, timeBudgetSeconds, weights, laws) {
+  const { matMult, coreMult } = computeMultipliers(state);
+
+  // 1. Walk sequential steps, accumulate resource needs.
+  //    At each step, if any resource's deficit time >= budget,
+  //    return the closest-to-budget match at that step immediately.
+  const cumMats = {};
+  let cumCores = 0;
 
   for (let stepIdx = 0; stepIdx < path.length; stepIdx++) {
     const step = path[stepIdx];
-    const cost = getUpgradeCost(step.law, step.fromLevel);
+    const cost = step.cost;
 
     for (const { name, qty } of cost.materials) {
-      if (!resourceNeeds[name]) {
-        resourceNeeds[name] = { totalQty: 0, earliestStep: -1, type: 'material' };
-      }
-      resourceNeeds[name].totalQty += qty;
-      if (resourceNeeds[name].earliestStep === -1) {
-        const have = getMaterial(state, name);
-        if (resourceNeeds[name].totalQty > have) {
-          resourceNeeds[name].earliestStep = stepIdx;
-        }
+      cumMats[name] = (cumMats[name] || 0) + qty;
+    }
+    cumCores += cost.cores;
+
+    let bestAtThisStep = null;
+
+    for (const [name, totalQty] of Object.entries(cumMats)) {
+      const have = getMaterial(state, name);
+      const deficit = Math.max(0, totalQty - have);
+      if (deficit <= 0) continue;
+      const rate = getMaterialRate(name) * matMult;
+      const timeNeeded = deficit / rate;
+      if (timeNeeded >= timeBudgetSeconds) {
+        bestAtThisStep = pickCloser(bestAtThisStep, { resource: name, type: 'material', deficit, timeNeeded, stepName: path[stepIdx].law.name }, timeBudgetSeconds);
       }
     }
 
-    if (!resourceNeeds['_cores']) {
-      resourceNeeds['_cores'] = { totalQty: 0, earliestStep: -1, type: 'cores' };
+    const coreDeficit = Math.max(0, cumCores - getCores(state));
+    if (coreDeficit > 0) {
+      const rate = getCoreRate() * coreMult;
+      const timeNeeded = coreDeficit / rate;
+      if (timeNeeded >= timeBudgetSeconds) {
+        bestAtThisStep = pickCloser(bestAtThisStep, { resource: 'cores', type: 'cores', deficit: coreDeficit, timeNeeded, stepName: path[stepIdx].law.name }, timeBudgetSeconds);
+      }
     }
-    resourceNeeds['_cores'].totalQty += cost.cores;
-    if (resourceNeeds['_cores'].earliestStep === -1 && resourceNeeds['_cores'].totalQty > state.cores) {
-      resourceNeeds['_cores'].earliestStep = stepIdx;
+
+    if (bestAtThisStep) {
+      return buildResult(bestAtThisStep, timeBudgetSeconds, `Path bottleneck: ${bestAtThisStep.resource} needed for ${bestAtThisStep.stepName}`);
     }
   }
 
-  const bottlenecks = [];
+  // 2. No resource fills the budget in the path — collect candidates from path
+  //    and zero-score laws, pick the one closest to budget.
+  //    If all are below budget, pick the longest.
+  let overallBest = collectPathCandidates(cumMats, cumCores, state, matMult, coreMult, timeBudgetSeconds);
 
-  for (const [name, info] of Object.entries(resourceNeeds)) {
-    if (info.earliestStep === -1) continue;
+  for (const law of laws) {
+    const currentLevel = getLevel(state, law.name);
+    if (isMaxLevel(law, currentLevel)) continue;
+    const gain = computeTotalGain(law, weights);
+    if (gain > 0) continue;
 
-    let deficit;
-    if (info.type === 'cores') {
-      deficit = Math.max(0, info.totalQty - state.cores);
-    } else {
-      deficit = Math.max(0, info.totalQty - getMaterial(state, name));
+    const cost = getUpgradeCost(law, currentLevel);
+    for (const { name, qty } of cost.materials) {
+      const have = getMaterial(state, name);
+      const deficit = Math.max(0, qty - have);
+      if (deficit <= 0) continue;
+      const rate = getMaterialRate(name) * matMult;
+      const timeNeeded = deficit / rate;
+      overallBest = pickBetterMatch(overallBest, { resource: name, type: 'material', deficit, timeNeeded, stepName: law.name }, timeBudgetSeconds);
     }
 
+    const coreDeficit = Math.max(0, cost.cores - getCores(state));
+    if (coreDeficit > 0) {
+      const rate = getCoreRate() * coreMult;
+      const timeNeeded = coreDeficit / rate;
+      overallBest = pickBetterMatch(overallBest, { resource: 'cores', type: 'cores', deficit: coreDeficit, timeNeeded, stepName: law.name }, timeBudgetSeconds);
+    }
+  }
+
+  if (overallBest) {
+    const source = overallBest.stepName ? `Fallback: ${overallBest.resource} needed for ${overallBest.stepName}` : `Farm ${overallBest.resource}`;
+    return buildResult(overallBest, timeBudgetSeconds, source);
+  }
+
+  return null;
+}
+
+function collectPathCandidates(cumMats, cumCores, state, matMult, coreMult, budget) {
+  let best = null;
+  for (const [name, totalQty] of Object.entries(cumMats)) {
+    const have = getMaterial(state, name);
+    const deficit = Math.max(0, totalQty - have);
     if (deficit <= 0) continue;
-
-    const mult = state.reincarnation ? (info.type === 'cores' ? 3 : 2) : 1;
-    const rate = (info.type === 'cores' ? getCoreRate() : getMaterialRate(name)) * mult;
+    const rate = getMaterialRate(name) * matMult;
     const timeNeeded = deficit / rate;
-
-    bottlenecks.push({
-      name: info.type === 'cores' ? 'cores' : name,
-      type: info.type,
-      deficit,
-      timeNeeded,
-      earliestStep: info.earliestStep,
-    });
+    best = pickBetterMatch(best, { resource: name, type: 'material', deficit, timeNeeded, stepName: null }, budget);
   }
-
-  if (bottlenecks.length === 0) return null;
-
-  const minNeed = bottlenecks.reduce((a, b) => a.timeNeeded < b.timeNeeded ? a : b);
-  let best;
-  if (timeBudgetSeconds >= minNeed.timeNeeded) {
-    best = bottlenecks.reduce((a, b) => a.timeNeeded > b.timeNeeded ? a : b);
-  } else {
-    best = bottlenecks.reduce((a, b) => a.earliestStep < b.earliestStep ? a : b);
+  const coreDeficit = Math.max(0, cumCores - getCores(state));
+  if (coreDeficit > 0) {
+    const rate = getCoreRate() * coreMult;
+    const timeNeeded = coreDeficit / rate;
+    best = pickBetterMatch(best, { resource: 'cores', type: 'cores', deficit: coreDeficit, timeNeeded, stepName: null }, budget);
   }
+  return best;
+}
 
+function pickCloser(current, candidate, budget) {
+  if (!current) return candidate;
+  return Math.abs(candidate.timeNeeded - budget) < Math.abs(current.timeNeeded - budget) ? candidate : current;
+}
+
+function pickBetterMatch(current, candidate, budget) {
+  if (!current) return candidate;
+  const curScore = matchScore(current.timeNeeded, budget);
+  const candScore = matchScore(candidate.timeNeeded, budget);
+  return candScore < curScore ? candidate : current;
+}
+
+function matchScore(timeNeeded, budget) {
+  if (timeNeeded >= budget) {
+    return timeNeeded - budget;
+  }
+  return (budget - timeNeeded) * 10;
+}
+
+function buildResult(match, budget, reason) {
   return {
-    resource: best.name,
-    type: best.type,
-    deficit: best.deficit,
-    timeNeeded: best.timeNeeded,
-    duration: Math.min(best.timeNeeded, timeBudgetSeconds),
-    reason: `Earliest bottleneck: ${best.name} needed for ${path[best.earliestStep].law.name} (${Math.round(best.timeNeeded)}s needed, ${Math.round(timeBudgetSeconds)}s budget)`,
+    resource: match.resource,
+    type: match.type,
+    deficit: match.deficit,
+    timeNeeded: match.timeNeeded,
+    duration: Math.min(match.timeNeeded, budget),
+    reason,
   };
 }
