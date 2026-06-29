@@ -27,7 +27,61 @@ header h1 {
   color: #f0f6fc;
 }
 
+.tab-bar {
+  display: flex;
+  gap: 2px;
+  margin-top: 10px;
+  border-bottom: 1px solid #30363d;
+}
+
+.tab {
+  padding: 7px 18px;
+  background: none;
+  border: 1px solid transparent;
+  border-bottom: none;
+  border-radius: 5px 5px 0 0;
+  color: #8b949e;
+  font-size: 0.85rem;
+  cursor: pointer;
+  margin-bottom: -1px;
+}
+
+.tab:hover {
+  color: #c9d1d9;
+  background: #161b22;
+}
+
+.tab.active {
+  color: #f0f6fc;
+  background: #161b22;
+  border-color: #30363d;
+}
+
+.tab-content {
+  display: none;
+}
+
+.tab-content.active {
+  display: block;
+}
+
+#tab-calc.active {
+  display: grid;
+  grid-template-columns: 340px 1fr;
+  gap: 20px;
+  align-items: start;
+}
+
+#tab-wiki.active,
+#tab-mark-time.active {
+  display: block;
+}
+
 main {
+  margin-top: 16px;
+}
+
+#tab-calc.active {
   display: grid;
   grid-template-columns: 340px 1fr;
   gap: 20px;
@@ -403,8 +457,61 @@ main {
   color: #f0f6fc;
 }
 
+/* Wiki */
+
+.wiki-section {
+  margin-bottom: 16px;
+}
+
+.wiki-text {
+  font-size: 0.875rem;
+  color: #c9d1d9;
+  line-height: 1.5;
+  margin: 6px 0;
+}
+
+.wiki-text code {
+  background: #0d1117;
+  padding: 1px 5px;
+  border-radius: 3px;
+  font-size: 0.8rem;
+  color: #58a6ff;
+}
+
+.wiki-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.8rem;
+}
+
+.wiki-table th {
+  text-align: left;
+  color: #8b949e;
+  font-weight: 500;
+  padding: 5px 10px;
+  border-bottom: 1px solid #30363d;
+}
+
+.wiki-table td {
+  padding: 5px 10px;
+  border-bottom: 1px solid #21262d;
+  color: #c9d1d9;
+}
+
+.wiki-table tr:hover td {
+  background: #1c2128;
+}
+
+.law-detail-table td {
+  vertical-align: top;
+}
+
+.buffs-cell {
+  white-space: nowrap;
+}
+
 @media (max-width: 768px) {
-  main {
+  #tab-calc.active {
     grid-template-columns: 1fr;
   }
 

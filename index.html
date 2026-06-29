@@ -3,21 +3,32 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Immortality Incremental Law Synthesization Optimizer v1.6</title>
+  <title>Immortality Incremental Law Synthesization Optimizer v1.7</title>
   <link rel="icon" type="image/png" href="/Icon.png" />
   <link rel="stylesheet" href="/src/ui/styles.css" />
 </head>
 <body>
   <div id="app">
     <header>
-      <h1>Immortality Incremental Law Synthesization Optimizer <span class="version" title="2026-06-28">v1.6</span></h1>
+      <h1>Immortality Incremental Law Synthesization Optimizer <span class="version" title="2026-06-28">v1.7</span></h1>
+      <nav class="tab-bar">
+        <button class="tab active" data-tab="calc">Law Calc</button>
+        <button class="tab" data-tab="wiki">Wiki</button>
+        <button class="tab" data-tab="mark-time">Mark Time</button>
+      </nav>
     </header>
     <main>
-      <aside id="state-panel"></aside>
-      <section id="results-panel">
-        <div id="optimizer-panel"></div>
-        <div id="afk-panel"></div>
-      </section>
+      <div class="tab-content active" id="tab-calc">
+        <aside id="state-panel"></aside>
+        <section id="results-panel">
+          <div id="optimizer-panel"></div>
+          <div id="afk-panel"></div>
+        </section>
+      </div>
+      <div class="tab-content" id="tab-wiki"></div>
+      <div class="tab-content" id="tab-mark-time">
+        <p class="empty-state">Coming soon.</p>
+      </div>
     </main>
     <footer class="footer">
       2026 Chargou &amp; Big Pickle

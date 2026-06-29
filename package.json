@@ -1,7 +1,7 @@
 {
   "name": "ii-law-calc",
   "version": "1.2.0",
-  "description": "IdleOn II Law upgrade planner / calculator",
+  "description": "Immortality Incremental Law upgrade planner / calculator",
   "type": "module",
   "scripts": {
     "dev": "node scripts/dev-with-retry.js",

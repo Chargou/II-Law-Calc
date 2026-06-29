@@ -5,6 +5,7 @@ import { analyzeBottleneck } from '../afkOptimizer.js';
 import { renderStatePanel } from './statePanel.js';
 import { updateOptimizerPanel } from './optimizerPanel.js';
 import { updateAfkPanel } from './afkPanel.js';
+import { renderWikiPanel } from './wikiPanel.js';
 
 const STORAGE_KEY = 'ii-law-calc-state';
 const SETTINGS_KEY = 'ii-law-calc-settings';
@@ -248,4 +249,22 @@ export function createApp(rootEl) {
   });
 
   recalculate();
+
+  // Tabs
+  const wikiEl = document.getElementById('tab-wiki');
+  const tabBar = rootEl.querySelector('.tab-bar');
+  tabBar.addEventListener('click', e => {
+    const btn = e.target.closest('.tab');
+    if (!btn) return;
+    const tab = btn.dataset.tab;
+    tabBar.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    btn.classList.add('active');
+    rootEl.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+    const content = document.getElementById('tab-' + tab);
+    content.classList.add('active');
+    if (tab === 'wiki' && !wikiEl.dataset.rendered) {
+      renderWikiPanel(wikiEl);
+      wikiEl.dataset.rendered = '1';
+    }
+  });
 }
