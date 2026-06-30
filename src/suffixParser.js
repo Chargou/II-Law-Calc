@@ -4,7 +4,7 @@ export const SIMPLE = {
   'cent': 303,
 };
 
-export const BASES = { 'de': 0, 'vt': 1, 'tg': 2, 'qg': 3, 'qi': 4, 'sg': 5, 'st': 6, 'og': 7, 'ng': 8 };
+export const BASES = { 'de': 0, 'vg': 1, 'tg': 2, 'qg': 3, 'qi': 4, 'sg': 5, 'st': 6, 'og': 7, 'ng': 8 };
 export const PREFIX = { '': 0, 'u': 1, 'd': 2, 't': 3, 'qd': 4, 'qn': 5, 'sx': 6, 'sp': 7, 'oc': 8, 'no': 9 };
 
 export function suffixExp(s) {

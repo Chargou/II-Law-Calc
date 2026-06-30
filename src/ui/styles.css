@@ -72,9 +72,12 @@ header h1 {
   align-items: start;
 }
 
-#tab-wiki.active,
-#tab-mark-time.active {
+#tab-wiki.active {
   display: block;
+}
+
+#tab-mark-time:not(.active) {
+  display: none;
 }
 
 main {
@@ -137,12 +140,12 @@ main {
 .mult-row label {
   font-size: 0.875rem;
   color: #c9d1d9;
-  min-width: 100px;
+  min-width: 80px;
 }
 
 .input-group input,
 .mult-row input {
-  width: 80px;
+  width: 70px;
   padding: 3px 6px;
   background: #0d1117;
   border: 1px solid #30363d;
@@ -249,6 +252,48 @@ main {
   margin-bottom: 12px;
   padding-bottom: 8px;
   border-bottom: 1px solid #30363d;
+}
+
+#tab-mark-time {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  align-items: flex-start;
+}
+
+#tab-mark-time .card {
+  flex: 0 1 500px;
+  min-width: 280px;
+  overflow-wrap: break-word;
+}
+
+#tab-mark-time .input-group {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 3px 0;
+}
+
+#tab-mark-time .input-group label {
+  font-size: 0.875rem;
+  color: #c9d1d9;
+  white-space: nowrap;
+}
+
+#tab-mark-time .input-group input {
+  width: 100px;
+  padding: 3px 6px;
+  background: #0d1117;
+  border: 1px solid #30363d;
+  border-radius: 4px;
+  color: #e1e4e8;
+  font-size: 0.875rem;
+  text-align: right;
+}
+
+#tab-mark-time .input-group input:focus {
+  outline: none;
+  border-color: #58a6ff;
 }
 
 .upgrade-law {

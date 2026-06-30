@@ -26,19 +26,17 @@ export function computeMarkTime({ mps, rarity, clone, target, tier, progress }) 
 
   const startTier = Math.floor(Number(tier));
   let curTier = startTier;
-  let accumulatedOpens = progress ? BN.fromString(String(progress)) : BN.fromNumber(0);
+  let totalOpens = progress ? BN.fromString(String(progress)) : BN.fromNumber(0);
   let bulkBoost = BN.fromNumber(1);
-  let opensToNext = BN.mul(BN.fromString('10000'), BN.pow(BN.fromString('1.45'), curTier + 1));
+  let milestoneThresh = BN.mul(BN.fromString('10000'), BN.pow(BN.fromString('1.45'), curTier));
 
-  while (BN.cmp(accumulatedOpens, opensToNext) >= 0) {
-    accumulatedOpens = BN.sub(accumulatedOpens, opensToNext);
+  while (BN.cmp(totalOpens, milestoneThresh) >= 0) {
     curTier++;
     bulkBoost = BN.mul(bulkBoost, BN.fromString('1.1'));
-    opensToNext = BN.mul(opensToNext, BN.fromString('1.45'));
+    milestoneThresh = BN.mul(milestoneThresh, BN.fromString('1.45'));
   }
 
-  opensToNext = BN.sub(opensToNext, accumulatedOpens);
-
+  let opensToNext = BN.sub(milestoneThresh, totalOpens);
   let remainingProcs = effTargetProcs;
   let totalTime = BN.fromNumber(0);
 
@@ -68,7 +66,7 @@ export function computeMarkTime({ mps, rarity, clone, target, tier, progress }) 
         const rnMinus1 = BN.pow(r, n - 1);
         const cumTimeNMinus1 = BN.mul(firstTerm, BN.div(BN.sub(rnMinus1, BN.fromNumber(1)), BN.sub(r, BN.fromNumber(1))));
 
-        const cumOpensNMinus1 = BN.mul(opensToNext, BN.div(BN.sub(BN.pow(BN.fromString('1.45'), n - 1), BN.fromNumber(1)), BN.fromNumber(0.45)));
+        const cumOpensNMinus1 = BN.add(opensToNext, BN.mul(milestoneThresh, BN.sub(BN.pow(BN.fromString('1.45'), n - 1), BN.fromNumber(1))));
         const cumProcsNMinus1 = BN.div(cumOpensNMinus1, rarityBN);
         const remainingAfterNMinus1 = BN.sub(remainingProcs, cumProcsNMinus1);
 
@@ -86,9 +84,11 @@ export function computeMarkTime({ mps, rarity, clone, target, tier, progress }) 
     totalTime = BN.add(totalTime, timeToMilestone);
     remainingProcs = BN.sub(remainingProcs, procsInMilestone);
 
+    totalOpens = BN.add(totalOpens, opensToNext);
     curTier++;
     bulkBoost = BN.mul(bulkBoost, BN.fromString('1.1'));
-    opensToNext = BN.mul(opensToNext, BN.fromString('1.45'));
+    milestoneThresh = BN.mul(milestoneThresh, BN.fromString('1.45'));
+    opensToNext = BN.sub(milestoneThresh, totalOpens);
   }
 
   const tiersCrossed = curTier - startTier;

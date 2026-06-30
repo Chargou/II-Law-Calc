@@ -63,72 +63,63 @@ describe('computeMarkTime — no milestones', () => {
 describe('computeMarkTime — with milestones', () => {
   it('no milestone crossing, small target', () => {
     const r = computeMarkTime({ mps: '1000', rarity: '1', clone: '1', target: '10', tier: '0', progress: '0' });
-    // tier=0, bulkBoost=1, milestoneTarget=10000*1.45^1=14500
-    // effTarget=10, remaining=10, opensToMilestone=14500, opensThisStep=10
-    // time = 10*1/(1000*1) = 0.01
+    // milestone=10000, target=10 < 10000, no crossing
     expect(BN.toNumber(r.seconds)).toBeCloseTo(0.01, 5);
     expect(r.tiersCrossed).toBe(0);
   });
 
   it('crosses one milestone during session', () => {
     const r = computeMarkTime({ mps: '1000', rarity: '1', clone: '1', target: '20000', tier: '0', progress: '0' });
-    // tier=0, bulkBoost=1, milestone0=14500
-    // step1: opensToMilestone=14500, opensThisStep=14500, time1=14500/(1000*1)=14.5s, remaining=5500
-    // milestone reached: tier=1, bulkBoost=1.1, milestone1=14500*1.45=21025
-    // step2: opensToMilestone=21025, opensThisStep=5500, time2=5500/(1000*1.1)=5s
-    // total=19.5s, tiersCrossed=1
-    expect(BN.toNumber(r.seconds)).toBeCloseTo(19.5, 4);
-    expect(r.tiersCrossed).toBe(1);
-    // finalMps = 1000 * 1.1^1 = 1100
-    expect(BN.toNumber(r.finalMps)).toBeCloseTo(1100, 5);
+    // independent milestones: thresh0=10000, thresh1=14500, thresh2=21025
+    // loop1: 10000 opens at 1000mps→10s, cross→tier1, boost=1.1, opensToNext=4500, rem=10000
+    // loop2: 4500 opens at 1100mps→4.0909s, cross→tier2, boost=1.21, opensToNext=6525, rem=5500
+    // loop3: 5500 opens at 1210mps→4.545s < 6525/1210=5.392, finish
+    // total=10+4.0909+4.545=18.636, tiersCrossed=2
+    expect(BN.toNumber(r.seconds)).toBeCloseTo(18.63636, 4);
+    expect(r.tiersCrossed).toBe(2);
+    expect(BN.toNumber(r.finalMps)).toBeCloseTo(1210, 5);
   });
 
   it('crosses multiple milestones', () => {
     const r = computeMarkTime({ mps: '1000', rarity: '1', clone: '1', target: '50000', tier: '0', progress: '0' });
-    // tier=0: milestone=14500, step1 opens=14500, time1=14.5
-    // tier=1: milestone=21025, step2 opens=21025, time2=21025/1100=19.1136...
-    // tier=2: milestone~30486, remaining=50000-14500-21025=14475, opensThisStep=14475, time3=14475/(1000*1.21)=11.963...
-    // total~45.58s, tiersCrossed=2
-    expect(r.tiersCrossed).toBe(2);
-    expect(BN.toNumber(r.finalMps)).toBeCloseTo(1000 * 1.1 * 1.1, 5);
+    // independent milestones, 5 crossed (thresh0–thresh4 at 10000,14500,21025,30486.25,44205.06)
+    // loop times: 10 + 4.0909 + 5.3926 + 7.1082 + 9.3695 + 3.5983 = 39.56
+    expect(BN.toNumber(r.seconds)).toBeCloseTo(39.56, 2);
+    expect(r.tiersCrossed).toBe(5);
+    expect(BN.toNumber(r.finalMps)).toBeCloseTo(1610.51, 5);
   });
 
   it('pre-skip: instant tier advance at start', () => {
     const r = computeMarkTime({ mps: '1000', rarity: '1', clone: '1', target: '10', tier: '0', progress: '20000' });
-    // tier=0, milestoneTarget=14500, progress=20000 >= 14500
-    // pre-skip: accumulated=20000-14500=5500, tier=1, bulkBoost=1.1, milestoneTarget=14500*1.45=21025
-    // remaining=10, opensToMilestone=21025-5500=15525, opensThisStep=10
-    // time = 10*1/(1000*1.1) = 0.00909...
-    expect(r.tiersCrossed).toBe(1);
-    expect(BN.toNumber(r.seconds)).toBeCloseTo(0.0090909, 4);
+    // pre-skip: 20000 >= 10000→tier1, 20000 >= 14500→tier2, 20000 < 21025→stop
+    // opensToNext = 21025 - 20000 = 1025, boost = 1.21
+    // time = 10 / (1000*1.21) = 0.008264
+    expect(r.tiersCrossed).toBe(2);
+    expect(BN.toNumber(r.seconds)).toBeCloseTo(0.00826446, 4);
   });
 
   it('multiple pre-skips', () => {
-    // progress so large it skips multiple tiers immediately
     const r = computeMarkTime({ mps: '1000', rarity: '1', clone: '1', target: '10', tier: '0', progress: '50000' });
-    // tier=0 milestone=14500, skip: accumulated=50000-14500=35500, tier=1
-    // tier=1 milestone=21025, skip: accumulated=35500-21025=14475, tier=2
-    // tier=2 milestone=30486 (14500*1.45^2), progress=14475 < 30486, no more skip
-    // remaining=10, opensToMilestone=30486-14475=16011, opensThisStep=10
-    // time = 10/(1000*1.21) = 0.00826...
-    expect(r.tiersCrossed).toBe(2);
-    expect(BN.toNumber(r.finalMps)).toBeCloseTo(1000 * 1.1 * 1.1, 5);
+    // pre-skip: 50000 crosses thresh0(10000)→t1, thresh1(14500)→t2, thresh2(21025)→t3,
+    //           thresh3(30486.25)→t4, thresh4(44205.0625)→t5, 50000 < thresh5(64097.34)→stop
+    // opensToNext = 64097.34 - 50000 = 14097.34, boost = 1.1^5 = 1.61051
+    // time = 10 / (1000*1.61051) = 0.006209
+    expect(r.tiersCrossed).toBe(5);
+    expect(BN.toNumber(r.finalMps)).toBeCloseTo(1610.51, 5);
   });
 
   it('target finishes exactly at milestone', () => {
-    const r = computeMarkTime({ mps: '1000', rarity: '1', clone: '1', target: '14500', tier: '0', progress: '0' });
-    // tier=0: milestoneTarget=14500, opensThisStep=14500 (exactly fills milestone)
-    // time = 14500/(1000*1) = 14.5
-    // after: accumulated=14500 >= milestoneTarget, tier becomes 1
-    // remaining=0, done
+    const r = computeMarkTime({ mps: '1000', rarity: '1', clone: '1', target: '10000', tier: '0', progress: '0' });
+    // milestone thresh0=10000, timeToTarget=timeToMilestone=10
+    // equal → milestone crossed first, remaining=0
     expect(r.tiersCrossed).toBe(1);
-    expect(BN.toNumber(r.seconds)).toBeCloseTo(14.5, 5);
+    expect(BN.toNumber(r.seconds)).toBeCloseTo(10, 5);
   });
 
   it('starts at higher tier', () => {
     const r = computeMarkTime({ mps: '1000', rarity: '1', clone: '1', target: '50', tier: '5', progress: '5000' });
     // User MPS already includes 1.1^5, bulkBoost starts at 1
-    // milestoneTarget=10000*1.45^6, remaining=50, time = 50/(1000*1) = 0.05
+    // milestone=10000*1.45^5=64097.34, opensToNext=59097.34, target=50 < opensToNext
     expect(r.tiersCrossed).toBe(0);
     expect(BN.toNumber(r.seconds)).toBeCloseTo(0.05, 3);
   });
