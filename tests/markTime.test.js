@@ -127,11 +127,10 @@ describe('computeMarkTime — with milestones', () => {
 
   it('starts at higher tier', () => {
     const r = computeMarkTime({ mps: '1000', rarity: '1', clone: '1', target: '50', tier: '5', progress: '5000' });
-    // tier=5, bulkBoost=1.1^5=1.61051, milestoneTarget=10000*1.45^6=10000*~9.33=93300ish
-    // remaining=50, opensToMilestone=~93300-5000=88300, opensThisStep=50
-    // time = 50/(1000*1.61051) = 0.03105...
+    // User MPS already includes 1.1^5, bulkBoost starts at 1
+    // milestoneTarget=10000*1.45^6, remaining=50, time = 50/(1000*1) = 0.05
     expect(r.tiersCrossed).toBe(0);
-    expect(BN.toNumber(r.seconds)).toBeCloseTo(0.03105, 3);
+    expect(BN.toNumber(r.seconds)).toBeCloseTo(0.05, 3);
   });
 });
 

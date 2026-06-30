@@ -28,7 +28,7 @@ export function computeMarkTime({ mps, rarity, clone, target, tier, progress }) 
   let curTier = startTier;
   let accumulatedOpens = progress ? BN.fromString(String(progress)) : BN.fromNumber(0);
 
-  let bulkBoost = BN.pow(BN.fromString('1.1'), curTier);
+  let bulkBoost = BN.fromNumber(1);
   let milestoneTarget = BN.mul(BN.fromString('10000'), BN.pow(BN.fromString('1.45'), curTier + 1));
 
   while (BN.cmp(accumulatedOpens, milestoneTarget) >= 0) {
@@ -59,7 +59,8 @@ export function computeMarkTime({ mps, rarity, clone, target, tier, progress }) 
     }
   }
 
-  return { seconds: totalTime, tiersCrossed: curTier - startTier, finalMps: BN.mul(mpsBN, BN.pow(BN.fromString('1.1'), curTier)) };
+  const tiersCrossed = curTier - startTier;
+  return { seconds: totalTime, tiersCrossed, finalMps: BN.mul(mpsBN, BN.pow(BN.fromString('1.1'), tiersCrossed)) };
 }
 
 export function formatDuration(seconds) {
