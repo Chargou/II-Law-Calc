@@ -6,6 +6,7 @@ import { renderStatePanel } from './statePanel.js';
 import { updateOptimizerPanel } from './optimizerPanel.js';
 import { updateAfkPanel } from './afkPanel.js';
 import { renderWikiPanel } from './wikiPanel.js';
+import { renderMarkTimePanel } from './markTimePanel.js';
 
 const STORAGE_KEY = 'ii-law-calc-state';
 const SETTINGS_KEY = 'ii-law-calc-settings';
@@ -252,6 +253,7 @@ export function createApp(rootEl) {
 
   // Tabs
   const wikiEl = document.getElementById('tab-wiki');
+  const markTimeEl = document.getElementById('tab-mark-time');
   const tabBar = rootEl.querySelector('.tab-bar');
   tabBar.addEventListener('click', e => {
     const btn = e.target.closest('.tab');
@@ -265,6 +267,10 @@ export function createApp(rootEl) {
     if (tab === 'wiki' && !wikiEl.dataset.rendered) {
       renderWikiPanel(wikiEl);
       wikiEl.dataset.rendered = '1';
+    }
+    if (tab === 'mark-time' && !markTimeEl.dataset.rendered) {
+      renderMarkTimePanel(markTimeEl);
+      markTimeEl.dataset.rendered = '1';
     }
   });
 }

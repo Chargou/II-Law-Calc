@@ -160,6 +160,14 @@ export function cmp(a, b) {
   return 0;
 }
 
+export function ceil(a) {
+  if (Number.isNaN(a.mantissa) || a.mantissa === 0) return { mantissa: a.mantissa, exponent: a.exponent };
+  if (a.exponent < 0) return { mantissa: 1, exponent: 0 };
+  if (a.exponent >= 15) return { mantissa: a.mantissa, exponent: a.exponent };
+  const asNum = toNumber(a);
+  return fromNumber(Math.ceil(asNum));
+}
+
 function toPlainString(mantissa, exponent) {
   let sign = '';
   let m = mantissa;
