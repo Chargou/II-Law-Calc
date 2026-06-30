@@ -27,36 +27,68 @@ export function computeMarkTime({ mps, rarity, clone, target, tier, progress }) 
   const startTier = Math.floor(Number(tier));
   let curTier = startTier;
   let accumulatedOpens = progress ? BN.fromString(String(progress)) : BN.fromNumber(0);
-
   let bulkBoost = BN.fromNumber(1);
-  let milestoneTarget = BN.mul(BN.fromString('10000'), BN.pow(BN.fromString('1.45'), curTier + 1));
+  let opensToNext = BN.mul(BN.fromString('10000'), BN.pow(BN.fromString('1.45'), curTier + 1));
 
-  while (BN.cmp(accumulatedOpens, milestoneTarget) >= 0) {
-    accumulatedOpens = BN.sub(accumulatedOpens, milestoneTarget);
+  while (BN.cmp(accumulatedOpens, opensToNext) >= 0) {
+    accumulatedOpens = BN.sub(accumulatedOpens, opensToNext);
     curTier++;
     bulkBoost = BN.mul(bulkBoost, BN.fromString('1.1'));
-    milestoneTarget = BN.mul(milestoneTarget, BN.fromString('1.45'));
+    opensToNext = BN.mul(opensToNext, BN.fromString('1.45'));
   }
+
+  opensToNext = BN.sub(opensToNext, accumulatedOpens);
 
   let remainingProcs = effTargetProcs;
   let totalTime = BN.fromNumber(0);
 
   while (BN.cmp(remainingProcs, BN.fromNumber(0)) > 0) {
-    const opensToMilestone = BN.sub(milestoneTarget, accumulatedOpens);
-    const opensThisStep = BN.cmp(remainingProcs, opensToMilestone) < 0 ? remainingProcs : opensToMilestone;
+    const effectiveMPS = BN.mul(mpsBN, bulkBoost);
+    const timeToTarget = BN.div(BN.mul(remainingProcs, rarityBN), effectiveMPS);
+    const timeToMilestone = BN.div(opensToNext, effectiveMPS);
 
-    const timeThisStep = BN.div(BN.mul(opensThisStep, rarityBN), BN.mul(mpsBN, bulkBoost));
-    totalTime = BN.add(totalTime, timeThisStep);
-
-    remainingProcs = BN.sub(remainingProcs, opensThisStep);
-    accumulatedOpens = BN.add(accumulatedOpens, opensThisStep);
-
-    if (BN.cmp(accumulatedOpens, milestoneTarget) >= 0) {
-      accumulatedOpens = BN.fromNumber(0);
-      curTier++;
-      bulkBoost = BN.mul(bulkBoost, BN.fromString('1.1'));
-      milestoneTarget = BN.mul(milestoneTarget, BN.fromString('1.45'));
+    if (BN.cmp(timeToTarget, timeToMilestone) < 0) {
+      totalTime = BN.add(totalTime, timeToTarget);
+      break;
     }
+
+    const procsInMilestone = BN.div(opensToNext, rarityBN);
+    const procsNum = BN.toNumber(procsInMilestone);
+
+    if (isFinite(procsNum) && procsNum < 1) {
+      const needed = BN.mul(BN.fromString('0.45'), BN.mul(rarityBN, remainingProcs));
+      const targetRatio = BN.div(needed, opensToNext);
+      const logTarget = BN.log10(BN.add(targetRatio, BN.fromNumber(1)));
+      const n = Math.max(1, Math.ceil(logTarget / Math.log10(1.45)));
+
+      if (isFinite(n) && n > 0) {
+        const r = BN.div(BN.fromString('1.45'), BN.fromString('1.1'));
+        const firstTerm = BN.div(opensToNext, effectiveMPS);
+
+        const rnMinus1 = BN.pow(r, n - 1);
+        const cumTimeNMinus1 = BN.mul(firstTerm, BN.div(BN.sub(rnMinus1, BN.fromNumber(1)), BN.sub(r, BN.fromNumber(1))));
+
+        const cumOpensNMinus1 = BN.mul(opensToNext, BN.div(BN.sub(BN.pow(BN.fromString('1.45'), n - 1), BN.fromNumber(1)), BN.fromNumber(0.45)));
+        const cumProcsNMinus1 = BN.div(cumOpensNMinus1, rarityBN);
+        const remainingAfterNMinus1 = BN.sub(remainingProcs, cumProcsNMinus1);
+
+        const mpsAtNMinus1 = BN.mul(mpsBN, BN.mul(bulkBoost, BN.pow(BN.fromString('1.1'), n - 1)));
+        const finalTime = BN.div(BN.mul(remainingAfterNMinus1, rarityBN), mpsAtNMinus1);
+
+        totalTime = BN.add(totalTime, BN.add(cumTimeNMinus1, finalTime));
+        curTier += n - 1;
+        bulkBoost = BN.mul(bulkBoost, BN.pow(BN.fromString('1.1'), n - 1));
+        remainingProcs = BN.fromNumber(0);
+        continue;
+      }
+    }
+
+    totalTime = BN.add(totalTime, timeToMilestone);
+    remainingProcs = BN.sub(remainingProcs, procsInMilestone);
+
+    curTier++;
+    bulkBoost = BN.mul(bulkBoost, BN.fromString('1.1'));
+    opensToNext = BN.mul(opensToNext, BN.fromString('1.45'));
   }
 
   const tiersCrossed = curTier - startTier;
