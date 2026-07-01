@@ -98,6 +98,10 @@ export function renderStatePanel(el, state, options) {
         <input type="checkbox" id="ash-secret" ${state.ashSecret ? 'checked' : ''}>
         Ash Secret Maxed (2× mat & core rate)
       </label>
+      <label class="checkbox-label">
+        <input type="checkbox" id="stage-300" ${state.stage300 ? 'checked' : ''}>
+        Stage 300 (2× mat & core rate)
+      </label>
       <div class="mult-row">
         <label>Other mat mult</label>
         <input type="number" id="mat-mult" value="${state.materialRateMult ?? 1}" min="0.01" step="0.01">
@@ -167,6 +171,10 @@ export function renderStatePanel(el, state, options) {
 
   el.querySelector('#ash-secret').addEventListener('change', e => {
     options.onAshSecretChange(e.target.checked);
+  });
+
+  el.querySelector('#stage-300').addEventListener('change', e => {
+    options.onStage300Change(e.target.checked);
   });
 
   el.querySelector('#mat-mult').addEventListener('change', e => {
