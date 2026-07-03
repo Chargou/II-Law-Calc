@@ -93,7 +93,7 @@ export function renderStatePanel(el, state, options) {
       <div class="section" data-section="multipliers">
         <div class="section-header">
           <span class="toggle-icon">▶</span>
-          <span>Mats &amp; Cores multipliers</span>
+          <span>Mats &amp; Cores multipliers <a href="#" class="wiki-link" title="View in wiki">?</a></span>
         </div>
         <div class="section-body" style="display:none">
           <label class="checkbox-label">
@@ -146,6 +146,19 @@ export function renderStatePanel(el, state, options) {
   });
 
   el.addEventListener('click', e => {
+    const wikiLink = e.target.closest('.wiki-link');
+    if (wikiLink) {
+      e.preventDefault();
+      e.stopPropagation();
+      const wikiTab = document.querySelector('.tab[data-tab="wiki"]');
+      if (wikiTab) wikiTab.click();
+      requestAnimationFrame(() => {
+        const target = document.getElementById('wiki-relevant-upgrades');
+        if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+      return;
+    }
+
     const header = e.target.closest('.section-header');
     if (!header) return;
     const section = header.closest('.section');

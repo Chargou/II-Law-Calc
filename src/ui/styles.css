@@ -529,6 +529,73 @@ main {
   font-size: 0.8rem;
 }
 
+/* Upgrade entries */
+
+.upgrade-entry {
+  margin-bottom: 14px;
+  padding: 12px;
+  background: #0d1117;
+  border: 1px solid #30363d;
+  border-radius: 6px;
+}
+
+.upgrade-entry:last-child {
+  margin-bottom: 0;
+}
+
+.upgrade-entry strong {
+  font-size: 0.95rem;
+}
+
+.upgrade-entry .wiki-text {
+  margin: 4px 0;
+}
+
+.upgrade-effect {
+  font-size: 0.8rem;
+  color: #58a6ff;
+  margin-left: 4px;
+}
+
+.ash-tree-images {
+  display: none;
+  margin-top: 10px;
+}
+
+.ash-tree-images img {
+  display: block;
+  max-width: 100%;
+  margin-bottom: 8px;
+  border-radius: 4px;
+  border: 1px solid #30363d;
+}
+
+.ash-tree-images img:last-child {
+  margin-bottom: 0;
+}
+
+.wiki-link {
+  color: #8b949e;
+  text-decoration: none;
+  font-size: 0.75rem;
+  margin-left: 4px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #21262d;
+  border: 1px solid #30363d;
+  transition: background 0.15s, color 0.15s;
+}
+
+.wiki-link:hover {
+  background: #30363d;
+  color: #58a6ff;
+}
+
 .wiki-table th {
   text-align: left;
   color: #8b949e;

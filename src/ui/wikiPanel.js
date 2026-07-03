@@ -35,6 +35,40 @@ export function renderWikiPanel(el, matMult, coreMult) {
       </p>
     </div>
 
+    <div class="card wiki-section" id="wiki-relevant-upgrades">
+      <h3>Relevant Upgrades</h3>
+
+      <div class="upgrade-entry">
+        <strong>First reincarnation done</strong> <span class="upgrade-effect">(2× mat rate, 3× core rate)</span>
+        <p class="wiki-text">Need realm #1000. Full reset (even more than body tempering). Advised to do as early as possible.</p>
+      </div>
+
+      <div class="upgrade-entry">
+        <strong>Mark of Ash Secret Maxed</strong> <span class="upgrade-effect">(2× mat &amp; core rate)</span>
+        <p class="wiki-text">Voidcinder mark from the Mark of Ash. Need 60M for full effect. Base rarity (divide by your luck) is 514.08Tg.</p>
+      </div>
+
+      <div class="upgrade-entry">
+        <strong>Stage 300</strong> <span class="upgrade-effect">(2× mat &amp; core rate)</span>
+        <p class="wiki-text">Beat stage 300 of the Beast. Invest in damage and remnant law synths to get there early.</p>
+      </div>
+
+      <div class="upgrade-entry">
+        <strong>Ash Tree — Law secret upgrade</strong> <span class="upgrade-effect">(2× mats chance)</span>
+        <p class="wiki-text">Costs 2.5QIsg laws. Need beast stage 300 to unlock it.</p>
+        <button class="io-btn" id="ash-tree-img-toggle">Show images</button>
+        <div class="ash-tree-images">
+          <img src="${import.meta.env.BASE_URL}wiki/ash_tree_law_secret_1.png" alt="Ash Tree law secret location 1">
+          <img src="${import.meta.env.BASE_URL}wiki/ash_tree_law_secret_2.png" alt="Ash Tree law secret location 2">
+        </div>
+      </div>
+
+      <div class="upgrade-entry">
+        <strong>Divinity board 3</strong> <span class="upgrade-effect">(2× mats &amp; 2× cores)</span>
+        <p class="wiki-text">Upgrades on the Divinity Board 3, unlocked after buying the Ash Tree's law secret.</p>
+      </div>
+    </div>
+
     <div class="card wiki-section">
       <h3>Marks &amp; Materials</h3>
       <div class="scroll-table">
@@ -156,4 +190,14 @@ export function renderWikiPanel(el, matMult, coreMult) {
       </div>
     </div>
   `;
+
+  const toggleBtn = el.querySelector('#ash-tree-img-toggle');
+  const imgContainer = el.querySelector('.ash-tree-images');
+  if (toggleBtn && imgContainer) {
+    toggleBtn.addEventListener('click', () => {
+      const hidden = imgContainer.style.display === 'none' || imgContainer.style.display === '';
+      imgContainer.style.display = hidden ? 'block' : 'none';
+      toggleBtn.textContent = hidden ? 'Hide images' : 'Show images';
+    });
+  }
 }
