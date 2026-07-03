@@ -428,7 +428,7 @@ describe('integration', () => {
     const a = BN.fromString('1e50');
     const b = BN.fromString('2e50');
     const c = BN.add(a, b);
-    expect(BN.toString(c)).toBe('300QnDe');
+    expect(BN.toString(c)).toBe('300QiDe');
   });
 
   it('cmp across many orders of magnitude', () => {

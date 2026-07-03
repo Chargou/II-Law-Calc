@@ -90,25 +90,45 @@ export function renderStatePanel(el, state, options) {
         <input type="checkbox" id="advanced-mode" ${advanced ? 'checked' : ''}>
         Advanced mode (weights)
       </label>
-      <label class="checkbox-label">
-        <input type="checkbox" id="reincarnation" ${state.reincarnation ? 'checked' : ''}>
-        First reincarnation done (2× mat rate, 3× core rate)
-      </label>
-      <label class="checkbox-label">
-        <input type="checkbox" id="ash-secret" ${state.ashSecret ? 'checked' : ''}>
-        Ash Secret Maxed (2× mat & core rate)
-      </label>
-      <label class="checkbox-label">
-        <input type="checkbox" id="stage-300" ${state.stage300 ? 'checked' : ''}>
-        Stage 300 (2× mat & core rate)
-      </label>
-      <div class="mult-row">
-        <label>Other mat mult</label>
-        <input type="number" id="mat-mult" value="${state.materialRateMult ?? 1}" min="0.01" step="0.01">
-      </div>
-      <div class="mult-row">
-        <label>Other core mult</label>
-        <input type="number" id="core-mult" value="${state.coreRateMult ?? 1}" min="0.01" step="0.01">
+      <div class="section" data-section="multipliers">
+        <div class="section-header">
+          <span class="toggle-icon">▶</span>
+          <span>Mats &amp; Cores multipliers</span>
+        </div>
+        <div class="section-body" style="display:none">
+          <label class="checkbox-label">
+            <input type="checkbox" id="reincarnation" ${state.reincarnation ? 'checked' : ''}>
+            First reincarnation done (2× mat rate, 3× core rate)
+          </label>
+          <label class="checkbox-label">
+            <input type="checkbox" id="ash-secret" ${state.ashSecret ? 'checked' : ''}>
+            Ash Secret Maxed (2× mat &amp; core rate)
+          </label>
+          <label class="checkbox-label">
+            <input type="checkbox" id="stage-300" ${state.stage300 ? 'checked' : ''}>
+            Stage 300 (2× mat &amp; core rate)
+          </label>
+          <label class="checkbox-label">
+            <input type="checkbox" id="ash-tree" ${state.ashTree ? 'checked' : ''}>
+            Ash Tree &mdash; Law secret upgrade (2× mats)
+          </label>
+          <label class="checkbox-label">
+            <input type="checkbox" id="divinity-mat" ${state.divinityMat ? 'checked' : ''}>
+            Divinity board 3 (2× mats)
+          </label>
+          <label class="checkbox-label">
+            <input type="checkbox" id="divinity-core" ${state.divinityCore ? 'checked' : ''}>
+            Divinity board 3 (2× cores)
+          </label>
+          <div class="mult-row">
+            <label>Other mat mult</label>
+            <input type="number" id="mat-mult" value="${state.materialRateMult ?? 1}" min="0.01" step="0.01">
+          </div>
+          <div class="mult-row">
+            <label>Other core mult</label>
+            <input type="number" id="core-mult" value="${state.coreRateMult ?? 1}" min="0.01" step="0.01">
+          </div>
+        </div>
       </div>
       <div class="io-buttons">
         <button class="io-btn" id="export-btn">Export</button>
@@ -175,6 +195,18 @@ export function renderStatePanel(el, state, options) {
 
   el.querySelector('#stage-300').addEventListener('change', e => {
     options.onStage300Change(e.target.checked);
+  });
+
+  el.querySelector('#ash-tree').addEventListener('change', e => {
+    options.onAshTreeChange(e.target.checked);
+  });
+
+  el.querySelector('#divinity-mat').addEventListener('change', e => {
+    options.onDivinityMatChange(e.target.checked);
+  });
+
+  el.querySelector('#divinity-core').addEventListener('change', e => {
+    options.onDivinityCoreChange(e.target.checked);
   });
 
   el.querySelector('#mat-mult').addEventListener('change', e => {

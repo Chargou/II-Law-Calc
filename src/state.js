@@ -1,6 +1,6 @@
 import { laws as allLaws, materials as allMaterials } from './data/index.js';
 
-export function createState(initialLaws = {}, initialMaterials = {}, initialCores = 0, reincarnation = false, materialRateMult = 1, coreRateMult = 1, ashSecret = false, stage300 = false) {
+export function createState(initialLaws = {}, initialMaterials = {}, initialCores = 0, reincarnation = false, materialRateMult = 1, coreRateMult = 1, ashSecret = false, stage300 = false, ashTree = false, divinityMat = false, divinityCore = false) {
   const lawLevels = {};
   for (const law of allLaws) {
     lawLevels[law.name] = initialLaws[law.name] ?? 0;
@@ -20,6 +20,9 @@ export function createState(initialLaws = {}, initialMaterials = {}, initialCore
     coreRateMult,
     ashSecret,
     stage300,
+    ashTree,
+    divinityMat,
+    divinityCore,
   };
 }
 
@@ -29,6 +32,9 @@ export function computeMultipliers(state) {
   if (state.reincarnation) { matMult *= 2; coreMult *= 3; }
   if (state.ashSecret) { matMult *= 2; coreMult *= 2; }
   if (state.stage300) { matMult *= 2; coreMult *= 2; }
+  if (state.ashTree) { matMult *= 2; }
+  if (state.divinityMat) { matMult *= 2; }
+  if (state.divinityCore) { coreMult *= 2; }
   matMult *= (state.materialRateMult ?? 1);
   coreMult *= (state.coreRateMult ?? 1);
   return { matMult, coreMult };

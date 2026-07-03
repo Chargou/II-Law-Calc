@@ -22,7 +22,7 @@ function loadState() {
     const saved = localStorage.getItem(STORAGE_KEY);
     if (saved) {
       const parsed = JSON.parse(saved);
-      return createState(parsed.laws, parsed.materials, parsed.cores, parsed.reincarnation, parsed.materialRateMult, parsed.coreRateMult, parsed.ashSecret, parsed.stage300);
+      return createState(parsed.laws, parsed.materials, parsed.cores, parsed.reincarnation, parsed.materialRateMult, parsed.coreRateMult, parsed.ashSecret, parsed.stage300, parsed.ashTree, parsed.divinityMat, parsed.divinityCore);
     }
   } catch (e) {}
   return createState();
@@ -38,6 +38,9 @@ function saveState(state) {
     coreRateMult: state.coreRateMult,
     ashSecret: state.ashSecret,
     stage300: state.stage300,
+    ashTree: state.ashTree,
+    divinityMat: state.divinityMat,
+    divinityCore: state.divinityCore,
   }));
 }
 
@@ -148,7 +151,8 @@ export function createApp(rootEl) {
     renderStatePanel(statePanelEl, state, {
       onStateChange, onMetricChange, onWeightsChange, onAfkHoursChange,
       onTimeModeChange, onAdvancedChange, onReincarnationChange,
-      onAshSecretChange, onStage300Change, onMatMultChange, onCoreMultChange,
+      onAshSecretChange, onStage300Change, onAshTreeChange, onDivinityMatChange, onDivinityCoreChange,
+      onMatMultChange, onCoreMultChange,
       onExport, onImport,
       weights, afkHours, timeMode, advanced: isAdvanced, stage300: state.stage300,
     });
@@ -168,6 +172,21 @@ export function createApp(rootEl) {
 
   function onStage300Change(val) {
     state.stage300 = val;
+    onStateChange();
+  }
+
+  function onAshTreeChange(val) {
+    state.ashTree = val;
+    onStateChange();
+  }
+
+  function onDivinityMatChange(val) {
+    state.divinityMat = val;
+    onStateChange();
+  }
+
+  function onDivinityCoreChange(val) {
+    state.divinityCore = val;
     onStateChange();
   }
 
@@ -192,6 +211,9 @@ export function createApp(rootEl) {
       coreRateMult: state.coreRateMult,
       ashSecret: state.ashSecret,
       stage300: state.stage300,
+      ashTree: state.ashTree,
+      divinityMat: state.divinityMat,
+      divinityCore: state.divinityCore,
       weights: { ...weights },
       afkHours,
       timeMode,
@@ -208,6 +230,9 @@ export function createApp(rootEl) {
     state.coreRateMult = data.coreRateMult ?? 1;
     state.ashSecret = !!data.ashSecret;
     state.stage300 = !!data.stage300;
+    state.ashTree = !!data.ashTree;
+    state.divinityMat = !!data.divinityMat;
+    state.divinityCore = !!data.divinityCore;
     weights = { ...(data.weights || defaultWeights()) };
     afkHours = data.afkHours ?? 2;
     timeMode = data.timeMode || 'actual';
@@ -217,7 +242,8 @@ export function createApp(rootEl) {
     renderStatePanel(statePanelEl, state, {
       onStateChange, onMetricChange, onWeightsChange, onAfkHoursChange,
       onTimeModeChange, onAdvancedChange, onReincarnationChange,
-      onAshSecretChange, onStage300Change, onMatMultChange, onCoreMultChange,
+      onAshSecretChange, onStage300Change, onAshTreeChange, onDivinityMatChange, onDivinityCoreChange,
+      onMatMultChange, onCoreMultChange,
       weights, afkHours, timeMode, advanced: isAdvanced, stage300: state.stage300,
     });
     recalculate();
@@ -252,7 +278,8 @@ export function createApp(rootEl) {
   renderStatePanel(statePanelEl, state, {
     onStateChange, onMetricChange, onWeightsChange, onAfkHoursChange,
     onTimeModeChange, onAdvancedChange, onReincarnationChange,
-    onAshSecretChange, onStage300Change, onMatMultChange, onCoreMultChange,
+    onAshSecretChange, onStage300Change, onAshTreeChange, onDivinityMatChange, onDivinityCoreChange,
+    onMatMultChange, onCoreMultChange,
     onExport, onImport,
     weights, afkHours, timeMode, advanced: isAdvanced, stage300: state.stage300,
   });
