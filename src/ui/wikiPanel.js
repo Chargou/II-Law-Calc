@@ -67,7 +67,7 @@ export function renderWikiPanel(el, matMult, coreMult) {
 
     <div class="card wiki-section">
       <h3>Cores</h3>
-      <p class="wiki-text">Base core rate: <strong>10 cores every 0.25s</strong> (${fmtNum(getCoreRate())}/s).
+      <p class="wiki-text">Base core rate: <strong>10 cores every 0.25s</strong> (${fmtNum(getCoreRate())}/s).<br>
       Your beast core rate: <strong>${fmtNum(Math.round(10 * (coreMult ?? 1)))} cores every 0.25s</strong> (${fmtNum(getCoreRate() * (coreMult ?? 1))}/s).</p>
     </div>
 
