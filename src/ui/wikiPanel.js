@@ -8,6 +8,8 @@ function fmtNum(n) {
 }
 
 function fmtTime(seconds) {
+  if (seconds < 1) return `${seconds.toFixed(2)}s`;
+  if (seconds < 10) return `${seconds.toFixed(1)}s`;
   const h = Math.floor(seconds / 3600);
   const m = Math.floor((seconds % 3600) / 60);
   const s = Math.round(seconds % 60);
@@ -16,7 +18,7 @@ function fmtTime(seconds) {
   return `${s}s`;
 }
 
-export function renderWikiPanel(el, matMult) {
+export function renderWikiPanel(el, matMult, coreMult) {
   el.innerHTML = `
     <div class="card wiki-section">
       <h3>How Law Synthesis Works</h3>
@@ -65,7 +67,8 @@ export function renderWikiPanel(el, matMult) {
 
     <div class="card wiki-section">
       <h3>Cores</h3>
-      <p class="wiki-text">Base core rate: <strong>10 cores every 0.25s</strong> (${fmtNum(getCoreRate())}/s).</p>
+      <p class="wiki-text">Base core rate: <strong>10 cores every 0.25s</strong> (${fmtNum(getCoreRate())}/s).
+      Your beast core rate: <strong>${fmtNum(Math.round(10 * (coreMult ?? 1)))} cores every 0.25s</strong> (${fmtNum(getCoreRate() * (coreMult ?? 1))}/s).</p>
     </div>
 
     <div class="card wiki-section">

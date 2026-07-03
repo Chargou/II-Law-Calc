@@ -301,8 +301,8 @@ export function createApp(rootEl) {
     const content = document.getElementById('tab-' + tab);
     content.classList.add('active');
     if (tab === 'wiki') {
-      const { matMult } = computeMultipliers(state);
-      renderWikiPanel(wikiEl, matMult);
+      const { matMult, coreMult } = computeMultipliers(state);
+      renderWikiPanel(wikiEl, matMult, coreMult);
     }
     if (tab === 'mark-time' && !markTimeEl.dataset.rendered) {
       renderMarkTimePanel(markTimeEl);
