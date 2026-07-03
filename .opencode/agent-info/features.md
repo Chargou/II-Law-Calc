@@ -13,10 +13,17 @@
 
 ### Wiki Tab
 - How Law Synthesis Works explanation
-- Marks & Materials table with base rates and your adjusted rates
-- Cores section (base rate + your beast core rate)
+- **Relevant Upgrades** section — details each multiplier source (reincarnation, ash secret, stage 300, ash tree, divinity board 3) with unlock conditions and in-game context
+- Ash Tree entry has a **Show/Hide images** toggle button that reveals location screenshots from `public/wiki/`
+- A **? badge** on the sidebar's "Mats & Cores multipliers" header teleports to the Relevant Upgrades section in the wiki
+- Marks & Materials table with base rates and "Your avg time / mat" column (adjusted by current multipliers)
+- Cores section with base rate + "Your beast core rate" (adjusted by current core mult)
 - Tiers reference table
-- Laws reference table (per-level buffs, level 1 cost, max level cost)
+- Laws reference table (per-level buffs, level 1 cost, level 10 total cost)
+
+### AFK Tab
+- **AFK Recommendation** — given a time budget, tells you which resource to AFK to make progress on the next bottleneck upgrade
+- **Farming Time Calculator** — pick a resource, enter a suffixed amount, choose target/extra toggle, and see estimated time to farm it
 
 ### Mark Time Tab
 - **Mark Time Estimator:** given MPS, rarity, clone, target amount, optional milestone progress → expected time
@@ -59,8 +66,14 @@ Parses numbers like `1.5qd`, `2e50`, `3uVg`. Two-tier suffix system:
 Milestones at every `10000 × 1.45^T` total opens. Each milestone crossed gives ×1.1 MPS boost.
 Independent model: total opens count, NOT target procs per tier.
 
-### Wiki "Your" Columns
-When the Wiki tab is selected, `computeMultipliers(state)` is called and the results are passed to `renderWikiPanel(el, matMult, coreMult)` so the "Your avg time / mat" and "Your beast core rate" reflect current multipliers. The wiki re-renders on every tab switch.
+### Wiki Renders on Every Tab Switch
+When the Wiki tab is selected, `computeMultipliers(state)` is called and the results are passed to `renderWikiPanel(el, matMult, coreMult)` so "Your avg time / mat", "Your beast core rate", and the Relevant Upgrades section all reflect current multipliers. The wiki re-renders on every tab switch.
+
+### Image Toggle
+The Ash Tree entry in Relevant Upgrades has a button that toggles visibility of two location screenshots. Images are served from `public/wiki/` using `import.meta.env.BASE_URL` to respect Vite's configured base path (`/II-Law-Calc/`).
+
+### ? Teleport Link
+A small circular `?` badge next to the "Mats & Cores multipliers" section header in the sidebar. Clicking it programmatically clicks the Wiki tab and scrolls to `#wiki-relevant-upgrades` via `scrollIntoView({ behavior: 'smooth' })`.
 
 ### Data Flow
 ```

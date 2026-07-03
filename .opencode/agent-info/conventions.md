@@ -8,6 +8,13 @@ Each logical feature or fix gets its own commit. Examples:
 - Wire persistence for it → include in same commit as the feature
 - Bumping version → its own commit at the end
 
+### Bump protocol
+When user says "bump to X.Y.Z":
+1. First update `.opencode/agent-info/` files with any new features/changes added this version
+2. Then bump version in `package.json` and `index.html`
+3. Commit with version bump message
+4. User pushes to GitHub Pages
+
 ### Bug fix for previous commit → squash / amend
 If a bug is found in the most recent commit, do NOT create a new commit — amend the previous one:
 ```bash
@@ -37,7 +44,7 @@ Update in two files:
 - `package.json` — `"version": "X.Y.Z"`
 - `index.html` — both `<title>` text and `<span class="version">` text
 
-These should always match. Currently at **1.10.0** (display v1.10).
+These should always match. Currently at **1.11.0** (display v1.11).
 
 ## Coding Conventions
 

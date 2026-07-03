@@ -35,16 +35,19 @@ A game milestone. When marked complete: ×2 material rate, ×3 core rate.
 A secret rune in the Mark of Ash. When maxed: ×2 both rates.
 
 ### Stage 300
-A game stage milestone. ×2 both rates.
+Beast stage 300 milestone. When achieved: ×2 both rates. Needs damage and remnant law synths.
 
 ### Ash Tree (Law secret upgrade)
-A law secret upgrade. ×2 material rate.
+A law secret upgrade from the Ash tree. Costs 2.5QIsg laws, unlocked after stage 300. Gives ×2 mats chance.
 
 ### Divinity board 3
-A divinity tree upgrade. Two separate bonuses: ×2 material rate and ×2 core rate.
+Divinity board unlocked after Ash Tree law secret. Two separate upgrades: ×2 material rate and ×2 core rate.
 
 ### Beast Core Rate
 Your effective core generation rate after applying all multipliers (checkboxes + manual input).
+
+### Farming Time Calculator
+A tool in the AFK tab. Lets you pick a resource (material or core), enter a suffixed amount (e.g. "19.8k", "356.82M"), and toggle between "target" (time to farm N from zero) or "extra" (time to farm N more on top of current). Uses current multipliers and rates.
 
 ## Non-Obvious Code Info
 
