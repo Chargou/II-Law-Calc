@@ -2,7 +2,7 @@
 
 A tool to plan your Law upgrades in **Immortality Incremental**. Enter your current progress and it tells you what to upgrade next, how long it'll take, and what to farm while AFK.
 
-**[Use it here](https://anomalyco.github.io/II-Law-Calc/)**
+**[Use it here](https://chargou.github.io/II-Law-Calc/)**
 
 ---
 
