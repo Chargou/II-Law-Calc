@@ -16,7 +16,7 @@ function fmtTime(seconds) {
   return `${s}s`;
 }
 
-export function renderWikiPanel(el) {
+export function renderWikiPanel(el, matMult) {
   el.innerHTML = `
     <div class="card wiki-section">
       <h3>How Law Synthesis Works</h3>
@@ -28,6 +28,7 @@ export function renderWikiPanel(el) {
       <p class="wiki-text">
         Materials and cores are farmed passively in real time. Each mark has a base proc rate
         (chance per second). The average time between procs is <code>1 / rate</code>.
+        The "Your avg time / mat" column accounts for your current material rate multipliers.
         Cores have a flat generation rate.
       </p>
     </div>
@@ -42,17 +43,21 @@ export function renderWikiPanel(el) {
               <th>Material</th>
               <th>Rate / sec</th>
               <th>Avg time / proc</th>
+              <th>Your avg time / mat</th>
             </tr>
           </thead>
           <tbody>
-            ${materials.map(m => `
+            ${materials.map(m => {
+              const effectiveRate = m.ratePerSecond * (matMult ?? 1);
+              return `
               <tr>
                 <td>${m.mark}</td>
                 <td>${m.material}</td>
                 <td>${fmtNum(m.ratePerSecond)}</td>
                 <td>${fmtTime(1 / m.ratePerSecond)}</td>
+                <td>${fmtTime(1 / effectiveRate)}</td>
               </tr>
-            `).join('')}
+            `}).join('')}
           </tbody>
         </table>
       </div>

@@ -2,6 +2,7 @@ import { laws } from '../data/index.js';
 import { createState } from '../state.js';
 import { findBestNextUpgrade, getUpgradePath, applyUpgrade, ALL_METRICS } from '../optimizer.js';
 import { analyzeBottleneck } from '../afkOptimizer.js';
+import { computeMultipliers } from '../state.js';
 import { renderStatePanel } from './statePanel.js';
 import { updateOptimizerPanel } from './optimizerPanel.js';
 import { updateAfkPanel } from './afkPanel.js';
@@ -299,9 +300,9 @@ export function createApp(rootEl) {
     rootEl.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
     const content = document.getElementById('tab-' + tab);
     content.classList.add('active');
-    if (tab === 'wiki' && !wikiEl.dataset.rendered) {
-      renderWikiPanel(wikiEl);
-      wikiEl.dataset.rendered = '1';
+    if (tab === 'wiki') {
+      const { matMult } = computeMultipliers(state);
+      renderWikiPanel(wikiEl, matMult);
     }
     if (tab === 'mark-time' && !markTimeEl.dataset.rendered) {
       renderMarkTimePanel(markTimeEl);
