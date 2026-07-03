@@ -24,7 +24,7 @@ function fmtNum(n) {
 function renderAfkCard(afk) {
   if (!afk) {
     return `
-      <div class="card">
+      <div class="card" style="margin-bottom:16px">
         <h3>Long AFK Recommendation</h3>
         <p class="empty-state">Run the optimizer above to see long AFK recommendations.</p>
       </div>
@@ -32,7 +32,7 @@ function renderAfkCard(afk) {
   }
   const resourceLabel = afk.type === 'cores' ? 'Cores' : `${afk.resource}`;
   return `
-    <div class="card">
+    <div class="card" style="margin-bottom:16px">
       <h3>Long AFK Recommendation</h3>
       <div class="afk-action">Farm <strong>${resourceLabel}</strong> for <strong>${fmtTime(afk.duration)}</strong></div>
       <div class="upgrade-cost">${fmtNum(afk.deficit)} ${afk.type === 'cores' ? 'cores' : afk.resource} needed (${fmtTime(afk.timeNeeded)} total)</div>
@@ -117,20 +117,16 @@ function updateResult(el, state, matMult, coreMult) {
 }
 
 function wireEvents(el, state, matMult, coreMult) {
-  const inputs = ['#farm-resource', '#farm-amount', '#farm-target-mode'];
   const handler = () => updateResult(el, state, matMult, coreMult);
 
-  inputs.forEach(sel => {
-    const input = el.querySelector(sel);
-    if (input) input.addEventListener('change', handler);
-  });
+  const resource = el.querySelector('#farm-resource');
+  const amount = el.querySelector('#farm-amount');
+  const targetMode = el.querySelector('#farm-target-mode');
 
-  const amountInput = el.querySelector('#farm-amount');
-  if (amountInput) {
-    amountInput.addEventListener('input', handler);
-  }
+  if (resource) resource.addEventListener('change', handler);
+  if (amount) amount.addEventListener('input', handler);
+  if (targetMode) targetMode.addEventListener('click', handler);
 
-  // Initial result
   updateResult(el, state, matMult, coreMult);
 }
 
