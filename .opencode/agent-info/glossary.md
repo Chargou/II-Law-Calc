@@ -32,7 +32,7 @@ A secondary resource generated at a flat rate (base: 10 cores / 0.25s = 40/s). R
 A game milestone. When marked complete: ×2 material rate, ×3 core rate.
 
 ### Ash Secret
-A law secret upgrade. When maxed: ×2 both rates.
+A secret rune in the Mark of Ash. When maxed: ×2 both rates.
 
 ### Stage 300
 A game stage milestone. ×2 both rates.

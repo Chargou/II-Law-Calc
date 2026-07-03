@@ -1,39 +1,64 @@
 # II Law Calc — Immortality Incremental Law Synthesization Optimizer
 
-Greedy upgrade-path optimizer for **Immortality Incremental** with a Mark Time estimator and game reference wiki.
+A tool to plan your Law upgrades in **Immortality Incremental**. Enter your current progress and it tells you what to upgrade next, how long it'll take, and what to farm while AFK.
 
-## Tabs
+**[Use it here](https://anomalyco.github.io/II-Law-Calc/)**
 
-### Law Calc
-Given your current resources (materials, cores, law levels), finds the best upgrade order based on your chosen metric or weighted combination of metrics. Simulates farming time and shows actual deficits per step.
+---
 
-1. Set your **law levels**, **materials**, and **cores** in the left panel
-2. Choose a **metric** or enable **Advanced mode** to set weights
-3. The optimizer shows the **Best Next Upgrade** and the **Full Upgrade Path**
-4. Click any path row to expand **farming details** per step
+## Law Calc Tab (main)
+
+1. **Set your current resources** in the left panel:
+   - Law levels (0-10 each)
+   - Material counts
+   - Cores
+2. **Pick a metric** to optimize for (Qi, Divinity, Citizens, Damage, Manual Luck, Disciple Luck, Remnants) — or enable **Advanced mode** to set custom weights per metric
+3. The optimizer shows:
+   - **Best Next Upgrade** — the single best law to level up next, with cost and farming time
+   - **Full Upgrade Path** — a full sequence of upgrades, best-first
+4. Click any row in the path to see **farming details** — exactly what resources you need to farm and for how long
 5. Click **Done** on a step to apply it and advance your state
-6. Use the **AFK recommendation** for idle farming sessions
+6. The **AFK Recommendation** tells you what single resource to focus on during idle sessions
+7. Toggle **Actual time** (considers what you already have) vs **Total time** (assumes full cost from zero)
 
-### Wiki
-Reference tables for laws (per-level buffs, tier costs), mark-to-material rates with average proc times, core rates, and game mechanics explanations.
+### Multipliers
 
-### Mark Time
-Estimates the expected time to farm a target amount of a specific mark, with optional milestone support (independent model: 10000 × 1.45^T total opens per milestone). MPS input includes current tier's ×1.1 boost. Live-updating results — no buttons needed.
+Open the **Mats & Cores multipliers** section to set:
 
-**Milestone Progression** card: compute opens and tier after a given duration, or compute time needed to reach a target tier. Duration input accepts colon format (`hh:mm:ss`) and `h`/`m`/`s` formats.
+| Checkbox | Effect |
+|----------|--------|
+| First reincarnation done | 2× mat rate, 3× core rate |
+| Ash Secret Maxed | 2× both rates |
+| Stage 300 | 2× both rates |
+| Ash Tree — Law secret upgrade | 2× mats |
+| Divinity board 3 | 2× mats |
+| Divinity board 3 | 2× cores |
+| Other mat / core mult | Custom multiplier (manual input) |
 
-## Features
+All multipliers stack multiplicatively.
 
-- **Greedy optimizer** — picks the highest-scoring next upgrade, repeats for a full path
-- **Metric scoring** — choose a single metric (Qi, Divinity, Citizens, etc.) or use **Advanced mode** with per-metric weights
-- **Actual / Total time** — Actual time uses current inventory; Total time assumes full cost
-- **AFK recommendation** — finds the longest bottleneck that fits within your time budget
-- **Reincarnation** — checkbox doubles material rates (×3 cores)
-- **Ash Secret** — checkbox adds another ×2 to both rates
-- **Custom rate multipliers** — manual input for additional material/core rate scaling
-- **Done button** — click a step's Done button to apply the upgrade to your state
-- **Export / Import** — full state as a shareable JSON file
-- **Dark theme** with responsive layout for mobile and desktop
-- **localStorage persistence** — state, settings, and mark-time inputs save automatically
-- **BigNum** — `{ mantissa, exponent }` handling for arbitrarily large numbers (plain, suffixed, or scientific display)
-- **Suffix parser** — case-insensitive parsing of suffixed values (k/M/B/T through Nonagintillion, plus scientific `e<N>`)
+### Export / Import
+Export your full state (law levels, materials, cores, all settings) as a JSON file to share or back up. Import to restore.
+
+---
+
+## Wiki Tab
+
+Reference tables for:
+- **Marks & Materials** — material rates, base and adjusted for your multipliers
+- **Cores** — base and your current beast core rate
+- **Tiers** — cost scaling info
+- **Laws** — per-level buffs, level 1 and max level costs
+
+---
+
+## Mark Time Tab
+
+- **Mark Time Estimator** — enter your MPS (includes current tier boost), target rarity, clone multiplier, target amount, and optionally your milestone progress to get the expected farming time
+- **Milestone Progression** — given your MPS and total opens, see how far you'll get after a given duration, or how long to reach a target tier
+
+Inputs support big numbers with suffixes (e.g., `1.5qd`, `2e50`) and auto-save.
+
+---
+
+Data saves automatically in your browser (localStorage). No account needed.
