@@ -102,7 +102,7 @@ export function renderStatePanel(el, state, options) {
           </label>
           <label class="checkbox-label">
             <input type="checkbox" id="ash-secret" ${state.ashSecret ? 'checked' : ''}>
-            Ash Secret Maxed (2× mat &amp; core rate)
+            Mark of Ash Secret Maxed (2× mat &amp; core rate)
           </label>
           <label class="checkbox-label">
             <input type="checkbox" id="stage-300" ${state.stage300 ? 'checked' : ''}>
@@ -110,7 +110,7 @@ export function renderStatePanel(el, state, options) {
           </label>
           <label class="checkbox-label">
             <input type="checkbox" id="ash-tree" ${state.ashTree ? 'checked' : ''}>
-            Ash Tree &mdash; Law secret upgrade (2× mats)
+            Ash Tree &mdash; Law secret upgrade (2× mats chance)
           </label>
           <label class="checkbox-label">
             <input type="checkbox" id="divinity-mat" ${state.divinityMat ? 'checked' : ''}>
