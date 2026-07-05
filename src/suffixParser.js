@@ -1,10 +1,10 @@
 export const SIMPLE = {
   'k': 3, 'm': 6, 'b': 9, 't': 12,
-  'qa': 15, 'qi': 18, 'sx': 21, 'sp': 24, 'oc': 27, 'no': 30,
+  'qa': 15, 'qi': 18, 'sx': 21, 'sp': 24, 'oc': 27, 'no': 30, 'dc': 33,
   'cent': 303,
 };
 
-export const BASES = { 'de': 0, 'vg': 1, 'tg': 2, 'qag': 3, 'qig': 4, 'sg': 5, 'st': 6, 'og': 7, 'ng': 8 };
+export const BASES = { 'd': 0, 'vg': 1, 'tg': 2, 'qag': 3, 'qig': 4, 'sg': 5, 'st': 6, 'og': 7, 'ct': 8 };
 export const PREFIX = { '': 0, 'u': 1, 'd': 2, 't': 3, 'qa': 4, 'qi': 5, 'sx': 6, 'sp': 7, 'oc': 8, 'no': 9 };
 
 export function suffixExp(s) {

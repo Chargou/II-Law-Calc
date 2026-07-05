@@ -85,8 +85,8 @@ describe('fromString', () => {
     expect(BN.fromString('3.5M')).toEqual(bn(3.5, 6));
   });
 
-  it('parses suffix notation Qd', () => {
-    expect(BN.fromString('5Qd')).toEqual(bn(5, 15));
+  it('parses suffix notation Qa', () => {
+    expect(BN.fromString('5Qa')).toEqual(bn(5, 15));
   });
 
   it('parses suffix notation SpTg', () => {
@@ -95,14 +95,14 @@ describe('fromString', () => {
     expect(n.exponent).toBe(114);
   });
 
-  it('parses suffix notation SxDe', () => {
-    const n = BN.fromString('3SxDe');
+  it('parses suffix notation SxD', () => {
+    const n = BN.fromString('3SxD');
     expect(n.mantissa).toBe(3);
     expect(n.exponent).toBe(51);
   });
 
   it('parses negative string', () => {
-    expect(BN.fromString('-5Qd')).toEqual(bn(-5, 15));
+    expect(BN.fromString('-5Qa')).toEqual(bn(-5, 15));
   });
 
   it('handles null/undefined', () => {
@@ -340,7 +340,7 @@ describe('toString', () => {
   });
 
   it('suffix notation for Qd', () => {
-    expect(BN.toString(BN.fromString('5Qd'))).toBe('5Qd');
+    expect(BN.toString(BN.fromString('5Qa'))).toBe('5Qa');
   });
 
   it('suffix notation for SpTg', () => {
@@ -417,8 +417,8 @@ describe('suffixParser.parseBigNum', () => {
 
 describe('integration', () => {
   it('fromString → mul → toString (spec example)', () => {
-    const a = BN.fromString('5Qd');
-    const b = BN.fromString('3SxDe');
+    const a = BN.fromString('5Qa');
+    const b = BN.fromString('3SxD');
     const c = BN.mul(a, b);
     expect(c.mantissa).toBeCloseTo(1.5, 5);
     expect(c.exponent).toBe(67);
@@ -428,7 +428,7 @@ describe('integration', () => {
     const a = BN.fromString('1e50');
     const b = BN.fromString('2e50');
     const c = BN.add(a, b);
-    expect(BN.toString(c)).toBe('300QiDe');
+    expect(BN.toString(c)).toBe('300QiD');
   });
 
   it('cmp across many orders of magnitude', () => {
